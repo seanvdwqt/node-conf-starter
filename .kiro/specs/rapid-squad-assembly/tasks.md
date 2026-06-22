@@ -35,39 +35,39 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Create `server/src/scoring/types.ts` with ScoringRule, RuleResult, CandidateContext (including proficiency levels, yearsExperience, currentTeam, projects), RequestContext (including required proficiency per skill), and ScoringConfig interfaces
     - _Requirements: 10.1, 10.2_
 
-  - [~] 2.2 Implement SkillMatchRule
+  - [x] 2.2 Implement SkillMatchRule
     - Create `server/src/scoring/rules/skillMatch.ts`
     - Score formula: `(mandatoryMatched × 2 + preferredMatched) / (totalMandatory × 2 + totalPreferred) × 100`
     - Exclude candidate if mandatoryMatched = 0 (set `exclude: true`)
     - Include matched skill names in explanation
     - _Requirements: 5.2, 5.3_
 
-  - [~] 2.3 Implement ProficiencyRule
+  - [x] 2.3 Implement ProficiencyRule
     - Create `server/src/scoring/rules/proficiency.ts`
     - For each matched skill: if candidate proficiency ≥ required → full points; if below → proportional reduction (candidateLevel / requiredLevel × 100)
     - Average across all matched skills for final score
     - Include proficiency comparison in explanation
     - _Requirements: 5.2, 6.1, 6.5_
 
-  - [~] 2.4 Implement ExperienceRule
+  - [x] 2.4 Implement ExperienceRule
     - Create `server/src/scoring/rules/experience.ts`
     - Score: `min(100, yearsExperience × 10)` — caps at 100 for 10+ years
     - Include years of experience in explanation
     - _Requirements: 5.10_
 
-  - [~] 2.5 Implement AvailabilityRule
+  - [x] 2.5 Implement AvailabilityRule
     - Create `server/src/scoring/rules/availability.ts`
     - Classify capacity: ≥75% → available (score 100), 25–74% → partially_available (score 50), <25% → unavailable (exclude)
     - Null/undefined capacity → unavailable (exclude)
     - _Requirements: 4.1, 4.3, 5.4, 5.5_
 
-  - [~] 2.6 Implement WorkloadRule
+  - [x] 2.6 Implement WorkloadRule
     - Create `server/src/scoring/rules/workload.ts`
     - Score: `max(0, 100 - currentWorkload)`
     - Flag `high_workload` when workload > configured threshold
     - _Requirements: 5.6_
 
-  - [~] 2.7 Implement UrgencyRule
+  - [x] 2.7 Implement UrgencyRule
     - Create `server/src/scoring/rules/urgency.ts`
     - High urgency: available=100, partially_available=40
     - Medium urgency: available=80, partially_available=60
