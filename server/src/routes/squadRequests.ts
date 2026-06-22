@@ -9,8 +9,9 @@
  * - POST   /squad-requests/:id/finalise — finalise the request
  * - GET    /roles                       — list all roles with skills
  * - GET    /candidates                  — list all candidates in the pool
+ * - POST   /squad-search                — instant squad search via natural-language query
  *
- * Requirements: 1.1, 1.3, 1.7, 3.1, 5.1, 7.1, 7.3, 8.3
+ * Requirements: 1.1, 1.3, 1.7, 3.1, 5.1, 7.1, 7.3, 8.3, 11.3, 11.4, 11.6, 11.8
  */
 
 import { Router, Request, Response } from 'express';
@@ -25,6 +26,9 @@ import {
   InvalidStateError,
 } from '../services/squadRequest.service.js';
 import { generateRecommendations } from '../services/scoring.service.js';
+import { parseQuery } from '../search/queryParser.js';
+import { composeTeams } from '../search/teamComposer.js';
+import type { CandidateContext, CandidateSkillInfo, CandidateProjectInfo, ProficiencyLevel } from '../scoring/types.js';
 
 export const squadRequestsRouter = Router();
 
@@ -213,6 +217,85 @@ squadRequestsRouter.get('/candidates', async (_req: Request, res: Response) => {
       },
     });
     res.status(200).json(candidates);
+  } catch (err) {
+    handleServiceError(err, res);
+  }
+});
+
+// --- POST /squad-search ---
+
+squadRequestsRouter.post('/squad-search', async (req: Request, res: Response) => {
+  try {
+    const { query } = req.body;
+
+    // Handle empty/missing query gracefully
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      res.status(200).json({
+        parsed: { roles: [], skills: [], urgency: null, signals: [] },
+        suggestions: [],
+        message: 'No matches found. Try specifying roles or skills.',
+      });
+      return;
+    }
+
+    // 1. Parse the query string
+    const parsed = parseQuery(query);
+
+    // 2. If no roles and no skills are extracted, return helpful message
+    if (parsed.roles.length === 0 && parsed.skills.length === 0) {
+      res.status(200).json({
+        parsed,
+        suggestions: [],
+        message: 'No matches found. Try specifying roles or skills.',
+      });
+      return;
+    }
+
+    // 3. Fetch all candidates from DB
+    const dbCandidates = await prisma.candidate.findMany({
+      where: { businessUnit: 'Digital Platforms' },
+      include: {
+        skills: {
+          include: {
+            skill: true,
+          },
+        },
+        projects: true,
+      },
+    });
+
+    // 4. Map to CandidateContext objects
+    const candidates: CandidateContext[] = dbCandidates.map((c) => {
+      const skills: CandidateSkillInfo[] = c.skills.map((cs) => ({
+        skillId: cs.skill.id,
+        name: cs.skill.name,
+        proficiency: cs.proficiency as ProficiencyLevel,
+      }));
+
+      const projects: CandidateProjectInfo[] = c.projects.map((cp) => ({
+        projectName: cp.projectName,
+        rolePlayed: cp.rolePlayed,
+      }));
+
+      return {
+        id: c.id,
+        name: c.name,
+        currentRole: c.currentRole,
+        businessUnit: c.businessUnit,
+        skills,
+        capacityFree: c.capacityFree,
+        currentWorkload: c.currentWorkload,
+        yearsExperience: c.yearsExperience,
+        currentTeam: c.currentTeam,
+        projects,
+      };
+    });
+
+    // 5. Call composeTeams
+    const suggestions = composeTeams(candidates, parsed);
+
+    // 6. Return parsed criteria + suggestions
+    res.status(200).json({ parsed, suggestions });
   } catch (err) {
     handleServiceError(err, res);
   }

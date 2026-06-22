@@ -264,18 +264,18 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Update `client/src/App.tsx` to render SquadWizard as the main content
     - _Requirements: 8.5_
 
-- [~] 9. Checkpoint — full-stack integration
+- [x] 9. Checkpoint — full-stack integration
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Instant Squad Search feature
-  - [~] 10.1 Implement query parser / tokenizer
+  - [x] 10.1 Implement query parser / tokenizer
     - Create `server/src/search/queryParser.ts`
     - Tokenize input text into structured criteria: extract role keywords (mapped to predefined roles), skill keywords (fuzzy-matched against skill list), quantity indicators (e.g. "2 engineers"), urgency signals (e.g. "urgent", "ASAP", "immediately")
     - Use case-insensitive matching with synonym mapping (e.g. "dev" → engineer, "BA" → business analyst, "QA" → tester)
     - Return a structured ParsedQuery object with roles (name + quantity), skills, urgency, and raw signals
     - _Requirements: 11.3, 11.8_
 
-  - [~] 10.2 Implement team composer
+  - [x] 10.2 Implement team composer
     - Create `server/src/search/teamComposer.ts`
     - Given parsed criteria, invoke the scoring engine per extracted role
     - Compose up to 5 candidate team combinations by selecting the top-scoring candidate per role
@@ -283,7 +283,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Generate a one-line explanation for each team composition
     - _Requirements: 11.4, 11.5_
 
-  - [~] 10.3 Implement search API endpoint
+  - [x] 10.3 Implement search API endpoint
     - Add `POST /api/squad-search` route handler
     - Accept `{ query: string }` body
     - Call queryParser → teamComposer pipeline
@@ -291,7 +291,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Handle empty/no-match queries gracefully
     - _Requirements: 11.3, 11.4, 11.6, 11.8_
 
-  - [~] 10.4 Implement InstantSquadSearch component
+  - [x] 10.4 Implement InstantSquadSearch component
     - Create `client/src/components/InstantSquadSearch.tsx`
     - Prominent search bar with placeholder: "I need 2 engineers with React experience and a tester, starting next week"
     - Show 3–5 example queries as clickable chips when search bar is focused and empty
@@ -299,7 +299,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Display loading state while waiting for results
     - _Requirements: 11.1, 11.2, 11.4_
 
-  - [~] 10.5 Implement TeamSuggestionCard component
+  - [x] 10.5 Implement TeamSuggestionCard component
     - Create `client/src/components/ui/TeamSuggestionCard.tsx`
     - Display team members with roles, match scores, key skills with proficiency, and availability badges
     - Show combined team score and one-line explanation
