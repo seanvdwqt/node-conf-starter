@@ -25,6 +25,7 @@ The design prioritises simplicity and demo-readiness over enterprise patterns. A
 ```mermaid
 graph TB
     subgraph Client ["client/ (React + Vite + Tailwind)"]
+        Search[Instant Squad Search]
         Wizard[Wizard Container]
         Step1[Step 1: Create Request]
         Step2[Step 2: Define Roles & Skills]
@@ -35,6 +36,7 @@ graph TB
 
     subgraph Server ["server/ (Express + TypeScript)"]
         API[Express API Router]
+        QueryParser[Query Parser / Tokenizer]
         ScoringEngine[Scoring Engine]
         SeedScript[Seed Script]
     end
@@ -43,6 +45,10 @@ graph TB
         DB[(dev.db)]
     end
 
+    Search -- "POST /api/squad-search" --> API
+    API --> QueryParser
+    QueryParser --> ScoringEngine
+    Search -- "select suggestion" --> Step4
     Wizard --> Step1 & Step2 & Step3 & Step4 & Step5
     Step1 -- "POST /api/squad-requests" --> API
     Step2 -- "PATCH /api/squad-requests/:id/roles" --> API
@@ -72,6 +78,9 @@ graph TB
 |-----------|----------|----------------|
 | `api.ts` routes | `server/src/routes/` | HTTP endpoints, request validation, response shaping |
 | `squadRequest.service.ts` | `server/src/services/` | Business logic for squad request CRUD |
+| `search.service.ts` | `server/src/services/` | Orchestrates query parsing → scoring → team composition |
+| `queryParser.ts` | `server/src/search/` | Tokenizes natural-language input into structured criteria |
+| `teamComposer.ts` | `server/src/search/` | Combines individual candidate scores into ranked team compositions |
 | `scoring.service.ts` | `server/src/services/` | Orchestrates scoring engine execution |
 | `scoring/engine.ts` | `server/src/scoring/` | Core engine: iterates rules, aggregates scores |
 | `scoring/rules/*.ts` | `server/src/scoring/rules/` | Individual rule implementations |
@@ -83,15 +92,19 @@ graph TB
 | Component | Location | Responsibility |
 |-----------|----------|----------------|
 | `SquadWizard` | `client/src/components/SquadWizard.tsx` | Wizard container — manages step state |
+| `InstantSquadSearch` | `client/src/components/InstantSquadSearch.tsx` | Search bar with debounced query, suggestion cards, and example queries |
+| `TeamSuggestionCard` | `client/src/components/ui/TeamSuggestionCard.tsx` | Displays a pre-composed squad suggestion with members and combined score |
 | `CreateRequestStep` | `client/src/components/steps/CreateRequestStep.tsx` | Form for request metadata |
-| `DefineRolesStep` | `client/src/components/steps/DefineRolesStep.tsx` | Role/skill selection UI |
-| `RecommendationsStep` | `client/src/components/steps/RecommendationsStep.tsx` | Displays scored shortlists |
+| `DefineRolesStep` | `client/src/components/steps/DefineRolesStep.tsx` | Role/skill selection with proficiency level picker |
+| `RecommendationsStep` | `client/src/components/steps/RecommendationsStep.tsx` | Displays scored shortlists with filters |
 | `AssembleSquadStep` | `client/src/components/steps/AssembleSquadStep.tsx` | Candidate selection with warnings |
 | `ReviewFinaliseStep` | `client/src/components/steps/ReviewFinaliseStep.tsx` | Summary and confirm/reset actions |
-| `CandidateCard` | `client/src/components/ui/CandidateCard.tsx` | Reusable candidate display |
+| `CandidateCard` | `client/src/components/ui/CandidateCard.tsx` | Rich candidate display: skills with proficiency dots, experience, team, projects |
 | `ScoreBadge` | `client/src/components/ui/ScoreBadge.tsx` | Match score visual indicator |
 | `AvailabilityBadge` | `client/src/components/ui/AvailabilityBadge.tsx` | Availability colour indicator |
+| `ProficiencyIndicator` | `client/src/components/ui/ProficiencyIndicator.tsx` | 1–3 dot/bar visual for skill depth |
 | `GapIndicator` | `client/src/components/ui/GapIndicator.tsx` | Missing role/skill warning |
+| `FilterBar` | `client/src/components/ui/FilterBar.tsx` | Filter/sort recommendations by experience, proficiency, team |
 
 ### API Interface
 
@@ -149,7 +162,10 @@ Triggers the scoring engine and returns ranked shortlists.
           "matchScore": 0-100,
           "availability": "available | partially_available | unavailable",
           "workload": "normal | high",
-          "matchedSkills": ["string"],
+          "matchedSkills": [{ "name": "string", "proficiency": 1-3, "requiredProficiency": 1-3 }],
+          "yearsExperience": 0-30,
+          "currentTeam": "string",
+          "previousProjects": [{ "name": "string", "role": "string" }],
           "explanation": "string",
           "scoreBreakdown": [
             { "rule": "string", "weight": 0.0-1.0, "contribution": 0-100 }
@@ -187,6 +203,46 @@ Returns all available roles with their predefined skills.
 #### `GET /api/candidates`
 Returns all candidates in the talent pool (for debug/display).
 
+#### `POST /api/squad-search`
+Instant squad search — tokenizes a natural-language query and returns pre-composed team suggestions.
+
+**Request Body:**
+```json
+{
+  "query": "string (the search input text)"
+}
+```
+
+**Response:**
+```json
+{
+  "parsed": {
+    "roles": [{ "name": "string", "quantity": 1 }],
+    "skills": ["string"],
+    "urgency": "low | medium | high | null",
+    "signals": ["string"]
+  },
+  "suggestions": [
+    {
+      "teamScore": 0-100,
+      "explanation": "string",
+      "members": [
+        {
+          "candidateId": "string",
+          "name": "string",
+          "role": "string",
+          "matchScore": 0-100,
+          "matchedSkills": [{ "name": "string", "proficiency": 1-3 }],
+          "availability": "available | partially_available",
+          "yearsExperience": 0-30,
+          "currentTeam": "string"
+        }
+      ]
+    }
+  ]
+}
+```
+
 ---
 
 ## Data Models
@@ -204,10 +260,22 @@ model Candidate {
   businessUnit   String
   capacityFree   Int      // percentage 0-100
   currentWorkload Int     // percentage 0-100
+  yearsExperience Int     // years in current role
+  currentTeam    String   // current assigned team at the bank
   createdAt      DateTime @default(now())
 
   skills         CandidateSkill[]
+  projects       CandidateProject[]
   squadSelections SquadSelection[]
+}
+
+model CandidateProject {
+  id          String @id @default(uuid())
+  candidateId String
+  projectName String
+  rolePlayed  String
+
+  candidate Candidate @relation(fields: [candidateId], references: [id])
 }
 
 model Role {
@@ -243,7 +311,7 @@ model CandidateSkill {
   id          String @id @default(uuid())
   candidateId String
   skillId     String
-  proficiency Int    // 1-5 scale
+  proficiency Int    // 1-3 scale: 1=foundational, 2=proficient, 3=expert
 
   candidate Candidate @relation(fields: [candidateId], references: [id])
   skill     Skill     @relation(fields: [skillId], references: [id])
@@ -286,6 +354,7 @@ model RequestSkill {
   requestRoleId String
   skillId       String
   priority      String  // "mandatory" or "preferred"
+  requiredProficiency Int @default(1) // 1-3: minimum proficiency level needed
   isCustom      Boolean @default(false)
   customName    String? // only if isCustom = true
 
@@ -319,6 +388,7 @@ erDiagram
     Role ||--o{ RoleSkill : "default skills"
     RoleSkill }o--|| Skill : references
     Candidate ||--o{ CandidateSkill : has
+    Candidate ||--o{ CandidateProject : "worked on"
     CandidateSkill }o--|| Skill : references
     SquadRequest ||--o{ SquadSelection : assembles
     SquadSelection }o--|| RequestRole : "fills"
@@ -334,7 +404,9 @@ flowchart LR
     A[Candidate List] --> B[Filter: Mandatory Skill Gate]
     B --> C[Filter: Availability Gate]
     C --> D[Score: Skill Match Rule]
-    D --> E[Score: Availability Rule]
+    D --> D2[Score: Proficiency Rule]
+    D2 --> D3[Score: Experience Rule]
+    D3 --> E[Score: Availability Rule]
     E --> F[Score: Workload Rule]
     F --> G[Score: Urgency Rule]
     G --> H[Aggregate & Rank]
@@ -359,9 +431,11 @@ interface RuleResult {
 
 interface ScoringConfig {
   weights: {
-    skillMatch: number;    // default 0.45
-    availability: number;  // default 0.25
-    workload: number;      // default 0.15
+    skillMatch: number;    // default 0.30
+    proficiency: number;   // default 0.15
+    experience: number;    // default 0.10
+    availability: number;  // default 0.20
+    workload: number;      // default 0.10
     urgency: number;       // default 0.15
   };
   thresholds: {
@@ -385,6 +459,8 @@ interface ScoringConfig {
 | Rule | Logic |
 |------|-------|
 | **SkillMatchRule** | `score = (mandatoryMatched × 2 + preferredMatched) / (totalMandatory × 2 + totalPreferred) × 100`. Excludes if mandatoryMatched = 0. |
+| **ProficiencyRule** | For each matched skill: if candidate proficiency ≥ required → full points; if below → proportional reduction (`candidateLevel / requiredLevel × 100`). Average across matched skills. |
+| **ExperienceRule** | `score = min(100, yearsExperience × 10)`. Caps at 100 for 10+ years. |
 | **AvailabilityRule** | `available` = 100, `partially_available` = 50, `unavailable` = exclude. |
 | **WorkloadRule** | `score = max(0, 100 - currentWorkload)`. Flags if workload > threshold. |
 | **UrgencyRule** | When urgency=high: available candidates get 100, partially_available get 40. When medium: 80/60. When low: all get 70 (neutral). |
@@ -397,8 +473,9 @@ The seed script (`server/prisma/seed.ts`) generates:
 |--------|-------|----------|
 | Roles | 6 | Fixed: architect, engineer, tester, data specialist, business analyst, delivery lead |
 | Skills | ~30 | Predefined per role (5 per role avg) |
-| Candidates | 30–50 | Faker-generated names, randomised skills (3–8 per candidate), random availability (20–100%), random workload (10–90%) |
+| Candidates | 30–50 | Faker-generated names, randomised skills (3–8 each, proficiency 1–3), random availability (20–100%), random workload (10–90%), years experience (1–15), current team from pool of 6 teams, 2–5 previous projects each |
 | Business Unit | 1 | Fixed: "Digital Platforms" |
+| Projects | ~100–200 | Random project names from a pool, assigned to candidates with role played |
 
 Seed is idempotent — uses `upsert` to allow re-running without duplicates. Run via:
 ```bash
