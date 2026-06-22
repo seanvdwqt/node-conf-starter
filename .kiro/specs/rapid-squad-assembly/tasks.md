@@ -210,7 +210,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Error handling: parse error responses, preserve form state on failure
     - _Requirements: 10.2_
 
-- [ ] 8. Frontend — wizard steps
+- [x] 8. Frontend — wizard steps
   - [x] 8.1 Implement Step 1: Create Request form
     - Create `client/src/components/steps/CreateRequestStep.tsx`
     - Form fields: title (max 100), business unit (fixed "Digital Platforms"), objective (max 500), urgency dropdown, start date picker, duration weeks (1–52), required capacity (10–100 step 10)
@@ -251,7 +251,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `PATCH /api/squad-requests/:id/squad` to save selections
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [~] 8.5 Implement Step 5: Review & Finalise
+  - [x] 8.5 Implement Step 5: Review & Finalise
     - Create `client/src/components/steps/ReviewFinaliseStep.tsx`
     - Display full summary: request details, selected candidates with scores, coverage gaps, explanations
     - Allow navigating back to modify selections
@@ -260,7 +260,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Display confirmation message on success
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [~] 8.6 Wire wizard into App component
+  - [x] 8.6 Wire wizard into App component
     - Update `client/src/App.tsx` to render SquadWizard as the main content
     - _Requirements: 8.5_
 

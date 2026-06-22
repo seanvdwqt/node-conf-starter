@@ -3,19 +3,13 @@ import { describe, it, expect } from 'vitest';
 import App from '../src/App';
 
 describe('App', () => {
-  it('renders the app heading', async () => {
+  it('renders the Rapid Squad Assembly heading', () => {
     render(<App />);
-    expect(await screen.findByRole('heading', { name: /node conf starter/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /rapid squad assembly/i })).toBeInTheDocument();
   });
 
-  it('renders the increment button', async () => {
+  it('renders the SquadWizard component', () => {
     render(<App />);
-    expect(await screen.findByRole('button', { name: /increment/i })).toBeInTheDocument();
-  });
-
-  it('shows the backend health status once loaded', async () => {
-    render(<App />);
-    // fetch is stubbed in tests/setup.ts to return { status: 'healthy' }
-    expect(await screen.findByText('healthy')).toBeInTheDocument();
+    expect(screen.getByTestId('squad-wizard')).toBeInTheDocument();
   });
 });
