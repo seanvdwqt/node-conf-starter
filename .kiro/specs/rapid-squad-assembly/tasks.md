@@ -231,7 +231,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `PATCH /api/squad-requests/:id/roles` on submit
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-  - [~] 8.3 Implement Step 3: Recommendations display
+  - [x] 8.3 Implement Step 3: Recommendations display
     - Create `client/src/components/steps/RecommendationsStep.tsx`
     - Call `POST /api/squad-requests/:id/recommend` on mount
     - Display ranked shortlist (up to 10 per role) using CandidateCard with rich data (proficiency indicators, experience, team, projects)
@@ -241,7 +241,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Include FilterBar for filtering/sorting by experience, proficiency, or team
     - _Requirements: 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 5.9_
 
-  - [~] 8.4 Implement Step 4: Assemble Squad
+  - [x] 8.4 Implement Step 4: Assemble Squad
     - Create `client/src/components/steps/AssembleSquadStep.tsx`
     - Allow selecting candidates per role (max 20 total)
     - Show warning when selecting partially_available or high workload candidates
