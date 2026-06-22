@@ -7,14 +7,14 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
 ## Tasks
 
 - [ ] 1. Data layer — Prisma schema and seed script
-  - [ ] 1.1 Extend Prisma schema with squad assembly models
+  - [x] 1.1 Extend Prisma schema with squad assembly models
     - Add Candidate (with yearsExperience, currentTeam), CandidateProject, Role, Skill, RoleSkill, CandidateSkill (proficiency 1–3), SquadRequest, RequestRole, RequestSkill (with requiredProficiency), and SquadSelection models to `server/prisma/schema.prisma`
     - Keep the existing User model untouched
     - Run `npx prisma migrate dev --name squad-assembly-models` to generate migration
     - Run `npx prisma generate` to update the client
     - _Requirements: 1.2, 3.1, 3.4, 4.1, 5.2, 6.1, 6.2_
 
-  - [ ] 1.2 Create mock data seed script
+  - [~] 1.2 Create mock data seed script
     - Create `server/prisma/seed.ts` using Prisma upsert for idempotency
     - Seed 6 fixed roles (architect, engineer, tester, data specialist, business analyst, delivery lead)
     - Seed ~30 predefined skills (5 per role average) across categories (technical, domain, soft)
@@ -25,56 +25,56 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Add `"prisma": { "seed": "npx tsx prisma/seed.ts" }` to `server/package.json`
     - _Requirements: 2.1, 6.1, 6.2, 6.3, 6.4, 11.3_
 
-  - [ ] 1.3 Create Prisma client singleton
+  - [~] 1.3 Create Prisma client singleton
     - Create `server/src/lib/prisma.ts` exporting a shared PrismaClient instance
     - _Requirements: 10.1_
 
 - [ ] 2. Scoring engine — rules, config, and engine orchestrator
-  - [ ] 2.1 Create scoring configuration and types
+  - [~] 2.1 Create scoring configuration and types
     - Create `server/src/scoring/config.ts` with default ScoringConfig (weights: skillMatch 0.30, proficiency 0.15, experience 0.10, availability 0.20, workload 0.10, urgency 0.15; thresholds: workloadHigh 80, minMandatorySkills 1)
     - Create `server/src/scoring/types.ts` with ScoringRule, RuleResult, CandidateContext (including proficiency levels, yearsExperience, currentTeam, projects), RequestContext (including required proficiency per skill), and ScoringConfig interfaces
     - _Requirements: 10.1, 10.2_
 
-  - [ ] 2.2 Implement SkillMatchRule
+  - [~] 2.2 Implement SkillMatchRule
     - Create `server/src/scoring/rules/skillMatch.ts`
     - Score formula: `(mandatoryMatched × 2 + preferredMatched) / (totalMandatory × 2 + totalPreferred) × 100`
     - Exclude candidate if mandatoryMatched = 0 (set `exclude: true`)
     - Include matched skill names in explanation
     - _Requirements: 5.2, 5.3_
 
-  - [ ] 2.3 Implement ProficiencyRule
+  - [~] 2.3 Implement ProficiencyRule
     - Create `server/src/scoring/rules/proficiency.ts`
     - For each matched skill: if candidate proficiency ≥ required → full points; if below → proportional reduction (candidateLevel / requiredLevel × 100)
     - Average across all matched skills for final score
     - Include proficiency comparison in explanation
     - _Requirements: 5.2, 6.1, 6.5_
 
-  - [ ] 2.4 Implement ExperienceRule
+  - [~] 2.4 Implement ExperienceRule
     - Create `server/src/scoring/rules/experience.ts`
     - Score: `min(100, yearsExperience × 10)` — caps at 100 for 10+ years
     - Include years of experience in explanation
     - _Requirements: 5.10_
 
-  - [ ] 2.5 Implement AvailabilityRule
+  - [~] 2.5 Implement AvailabilityRule
     - Create `server/src/scoring/rules/availability.ts`
     - Classify capacity: ≥75% → available (score 100), 25–74% → partially_available (score 50), <25% → unavailable (exclude)
     - Null/undefined capacity → unavailable (exclude)
     - _Requirements: 4.1, 4.3, 5.4, 5.5_
 
-  - [ ] 2.6 Implement WorkloadRule
+  - [~] 2.6 Implement WorkloadRule
     - Create `server/src/scoring/rules/workload.ts`
     - Score: `max(0, 100 - currentWorkload)`
     - Flag `high_workload` when workload > configured threshold
     - _Requirements: 5.6_
 
-  - [ ] 2.7 Implement UrgencyRule
+  - [~] 2.7 Implement UrgencyRule
     - Create `server/src/scoring/rules/urgency.ts`
     - High urgency: available=100, partially_available=40
     - Medium urgency: available=80, partially_available=60
     - Low urgency: all=70 (neutral)
     - _Requirements: 5.7_
 
-  - [ ] 2.8 Implement scoring engine orchestrator
+  - [~] 2.8 Implement scoring engine orchestrator
     - Create `server/src/scoring/engine.ts`
     - Filter phase: remove candidates failing mandatory skill gate or availability gate
     - Score phase: iterate rules (skillMatch, proficiency, experience, availability, workload, urgency), wrap each in try-catch (skip failed rules, log warning)
@@ -84,7 +84,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Return top 10 per role with breakdown and explanation
     - _Requirements: 5.1, 5.7, 5.8, 7.1, 10.1, 10.3, 10.4_
 
-  - [ ] 2.9 Implement explanation generator
+  - [~] 2.9 Implement explanation generator
     - Create `server/src/scoring/explanation.ts`
     - Generate human-readable explanation referencing matched skills by name with proficiency levels, experience, availability status, and applied scoring rules
     - No technical jargon or rule identifiers in output
@@ -110,19 +110,19 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - **Validates: Requirements 10.2, 10.4**
 
 - [ ] 3. Validation utilities and availability classifier
-  - [ ] 3.1 Implement squad request validation
+  - [~] 3.1 Implement squad request validation
     - Create `server/src/validation/squadRequest.ts`
     - Validate: title ≤100 chars, objective ≤500 chars, urgency in {low, medium, high}, durationWeeks 1–52 integer, requiredCapacity in {10,20,...,100}, startDate ≥ today, businessUnit = "Digital Platforms"
     - Return array of field-level errors (field name + message)
     - _Requirements: 1.3, 1.4, 1.5, 1.6, 2.3_
 
-  - [ ] 3.2 Implement availability classification function
+  - [~] 3.2 Implement availability classification function
     - Create `server/src/utils/availability.ts`
     - Pure function: capacityFree → available | partially_available | unavailable
     - Handle null/undefined → unavailable
     - _Requirements: 4.1, 4.3_
 
-  - [ ] 3.3 Implement custom skill validation
+  - [~] 3.3 Implement custom skill validation
     - Create `server/src/validation/customSkill.ts`
     - Validate description length 1–200 characters
     - _Requirements: 3.4_
@@ -136,18 +136,18 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - **Property 3: Availability Indicator Classification** — correct classification for all integers 0–100 and null
     - **Validates: Requirements 1.2, 1.3, 1.4, 1.5, 3.4, 4.1, 4.3**
 
-- [ ] 4. Checkpoint — data layer and scoring engine
+- [~] 4. Checkpoint — data layer and scoring engine
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. API routes and services
-  - [ ] 5.1 Create squad request service
+  - [~] 5.1 Create squad request service
     - Create `server/src/services/squadRequest.service.ts`
     - Implement create, getById, updateRoles, saveSquad, finalise operations
     - Use Prisma client for all DB operations
     - Enforce business unit restriction ("Digital Platforms")
     - _Requirements: 1.1, 1.2, 1.7, 2.1, 7.1, 8.3_
 
-  - [ ] 5.2 Create scoring service
+  - [~] 5.2 Create scoring service
     - Create `server/src/services/scoring.service.ts`
     - Query candidates from DB filtered by business unit
     - Map DB records to CandidateContext objects
@@ -155,7 +155,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Detect gaps (roles with zero matching candidates)
     - _Requirements: 5.1, 5.9, 6.1_
 
-  - [ ] 5.3 Implement API route handlers
+  - [~] 5.3 Implement API route handlers
     - Extend `server/src/routes/api.ts` or create `server/src/routes/squadRequests.ts`
     - `POST /api/squad-requests` — validate input, create request, return 201
     - `PATCH /api/squad-requests/:id/roles` — update roles and skills for request
@@ -166,7 +166,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - `GET /api/candidates` — return all candidates in talent pool
     - _Requirements: 1.1, 1.3, 1.7, 3.1, 5.1, 7.1, 7.3, 8.3_
 
-  - [ ] 5.4 Implement missing roles detection utility
+  - [~] 5.4 Implement missing roles detection utility
     - Create `server/src/utils/missingRoles.ts`
     - Given a squad request's roles and current selections, return the set of unfilled mandatory roles
     - _Requirements: 7.3, 8.1_
@@ -183,18 +183,18 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Mock Prisma client
     - _Requirements: 1.3, 1.4, 10.2_
 
-- [ ] 6. Checkpoint — API layer
+- [~] 6. Checkpoint — API layer
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Frontend — wizard container and shared UI components
-  - [ ] 7.1 Create wizard container and step navigation
+  - [~] 7.1 Create wizard container and step navigation
     - Create `client/src/components/SquadWizard.tsx`
     - Manage wizard state: current step (1–5), squad request data, selections
     - Implement forward/back navigation with step validation
     - Restrict to 5 screens maximum
     - _Requirements: 8.5_
 
-  - [ ] 7.2 Create shared UI components
+  - [~] 7.2 Create shared UI components
     - Create `client/src/components/ui/CandidateCard.tsx` — displays candidate name, role, skills with proficiency dots, experience, current team, previous projects, score, availability, workload
     - Create `client/src/components/ui/ScoreBadge.tsx` — numeric match score with colour coding
     - Create `client/src/components/ui/AvailabilityBadge.tsx` — availability indicator with colour (green/amber/red)
@@ -204,14 +204,14 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Use Tailwind CSS for all styling
     - _Requirements: 6.5, 6.6, 7.2, 5.9_
 
-  - [ ] 7.3 Create API client utility
+  - [~] 7.3 Create API client utility
     - Create `client/src/api/squadRequests.ts`
     - Typed fetch wrappers for all 7 API endpoints
     - Error handling: parse error responses, preserve form state on failure
     - _Requirements: 10.2_
 
 - [ ] 8. Frontend — wizard steps
-  - [ ] 8.1 Implement Step 1: Create Request form
+  - [~] 8.1 Implement Step 1: Create Request form
     - Create `client/src/components/steps/CreateRequestStep.tsx`
     - Form fields: title (max 100), business unit (fixed "Digital Platforms"), objective (max 500), urgency dropdown, start date picker, duration weeks (1–52), required capacity (10–100 step 10)
     - Client-side validation with inline error messages (Tailwind `text-red-500`)
@@ -219,7 +219,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `POST /api/squad-requests` on submit
     - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.6, 2.3, 10.2_
 
-  - [ ] 8.2 Implement Step 2: Define Roles & Skills with Proficiency
+  - [~] 8.2 Implement Step 2: Define Roles & Skills with Proficiency
     - Create `client/src/components/steps/DefineRolesStep.tsx`
     - Fetch roles from `GET /api/roles`
     - Allow selecting one or more roles from the 6 predefined options
@@ -231,7 +231,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `PATCH /api/squad-requests/:id/roles` on submit
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6_
 
-  - [ ] 8.3 Implement Step 3: Recommendations display
+  - [~] 8.3 Implement Step 3: Recommendations display
     - Create `client/src/components/steps/RecommendationsStep.tsx`
     - Call `POST /api/squad-requests/:id/recommend` on mount
     - Display ranked shortlist (up to 10 per role) using CandidateCard with rich data (proficiency indicators, experience, team, projects)
@@ -241,7 +241,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Include FilterBar for filtering/sorting by experience, proficiency, or team
     - _Requirements: 6.5, 6.6, 7.1, 7.2, 7.3, 7.4, 5.9_
 
-  - [ ] 8.4 Implement Step 4: Assemble Squad
+  - [~] 8.4 Implement Step 4: Assemble Squad
     - Create `client/src/components/steps/AssembleSquadStep.tsx`
     - Allow selecting candidates per role (max 20 total)
     - Show warning when selecting partially_available or high workload candidates
@@ -251,7 +251,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `PATCH /api/squad-requests/:id/squad` to save selections
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [ ] 8.5 Implement Step 5: Review & Finalise
+  - [~] 8.5 Implement Step 5: Review & Finalise
     - Create `client/src/components/steps/ReviewFinaliseStep.tsx`
     - Display full summary: request details, selected candidates with scores, coverage gaps, explanations
     - Allow navigating back to modify selections
@@ -260,22 +260,22 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Display confirmation message on success
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 8.6 Wire wizard into App component
+  - [~] 8.6 Wire wizard into App component
     - Update `client/src/App.tsx` to render SquadWizard as the main content
     - _Requirements: 8.5_
 
-- [ ] 9. Checkpoint — full-stack integration
+- [~] 9. Checkpoint — full-stack integration
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 10. Instant Squad Search feature
-  - [ ] 10.1 Implement query parser / tokenizer
+  - [~] 10.1 Implement query parser / tokenizer
     - Create `server/src/search/queryParser.ts`
     - Tokenize input text into structured criteria: extract role keywords (mapped to predefined roles), skill keywords (fuzzy-matched against skill list), quantity indicators (e.g. "2 engineers"), urgency signals (e.g. "urgent", "ASAP", "immediately")
     - Use case-insensitive matching with synonym mapping (e.g. "dev" → engineer, "BA" → business analyst, "QA" → tester)
     - Return a structured ParsedQuery object with roles (name + quantity), skills, urgency, and raw signals
     - _Requirements: 11.3, 11.8_
 
-  - [ ] 10.2 Implement team composer
+  - [~] 10.2 Implement team composer
     - Create `server/src/search/teamComposer.ts`
     - Given parsed criteria, invoke the scoring engine per extracted role
     - Compose up to 5 candidate team combinations by selecting the top-scoring candidate per role
@@ -283,7 +283,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Generate a one-line explanation for each team composition
     - _Requirements: 11.4, 11.5_
 
-  - [ ] 10.3 Implement search API endpoint
+  - [~] 10.3 Implement search API endpoint
     - Add `POST /api/squad-search` route handler
     - Accept `{ query: string }` body
     - Call queryParser → teamComposer pipeline
@@ -291,7 +291,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Handle empty/no-match queries gracefully
     - _Requirements: 11.3, 11.4, 11.6, 11.8_
 
-  - [ ] 10.4 Implement InstantSquadSearch component
+  - [~] 10.4 Implement InstantSquadSearch component
     - Create `client/src/components/InstantSquadSearch.tsx`
     - Prominent search bar with placeholder: "I need 2 engineers with React experience and a tester, starting next week"
     - Show 3–5 example queries as clickable chips when search bar is focused and empty
@@ -299,14 +299,14 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Display loading state while waiting for results
     - _Requirements: 11.1, 11.2, 11.4_
 
-  - [ ] 10.5 Implement TeamSuggestionCard component
+  - [~] 10.5 Implement TeamSuggestionCard component
     - Create `client/src/components/ui/TeamSuggestionCard.tsx`
     - Display team members with roles, match scores, key skills with proficiency, and availability badges
     - Show combined team score and one-line explanation
     - Clicking a card pre-populates wizard step 4 with the suggested selections
     - _Requirements: 11.5, 11.7_
 
-  - [ ] 10.6 Wire search into landing page
+  - [~] 10.6 Wire search into landing page
     - Update `client/src/App.tsx` to show InstantSquadSearch as the landing view above/alongside the wizard
     - When a team suggestion is selected, create a squad request with extracted criteria and jump to step 4
     - _Requirements: 11.7_
@@ -343,7 +343,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Test no-match message displays for unrecognised input
     - _Requirements: 11.1, 11.2, 11.4, 11.6, 11.7_
 
-- [ ] 12. Final checkpoint
+- [~] 12. Final checkpoint
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
