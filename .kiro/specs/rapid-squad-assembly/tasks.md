@@ -29,7 +29,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Create `server/src/lib/prisma.ts` exporting a shared PrismaClient instance
     - _Requirements: 10.1_
 
-- [ ] 2. Scoring engine — rules, config, and engine orchestrator
+- [x] 2. Scoring engine — rules, config, and engine orchestrator
   - [x] 2.1 Create scoring configuration and types
     - Create `server/src/scoring/config.ts` with default ScoringConfig (weights: skillMatch 0.30, proficiency 0.15, experience 0.10, availability 0.20, workload 0.10, urgency 0.15; thresholds: workloadHigh 80, minMandatorySkills 1)
     - Create `server/src/scoring/types.ts` with ScoringRule, RuleResult, CandidateContext (including proficiency levels, yearsExperience, currentTeam, projects), RequestContext (including required proficiency per skill), and ScoringConfig interfaces
@@ -74,7 +74,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Low urgency: all=70 (neutral)
     - _Requirements: 5.7_
 
-  - [~] 2.8 Implement scoring engine orchestrator
+  - [x] 2.8 Implement scoring engine orchestrator
     - Create `server/src/scoring/engine.ts`
     - Filter phase: remove candidates failing mandatory skill gate or availability gate
     - Score phase: iterate rules (skillMatch, proficiency, experience, availability, workload, urgency), wrap each in try-catch (skip failed rules, log warning)
@@ -84,7 +84,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Return top 10 per role with breakdown and explanation
     - _Requirements: 5.1, 5.7, 5.8, 7.1, 10.1, 10.3, 10.4_
 
-  - [~] 2.9 Implement explanation generator
+  - [x] 2.9 Implement explanation generator
     - Create `server/src/scoring/explanation.ts`
     - Generate human-readable explanation referencing matched skills by name with proficiency levels, experience, availability status, and applied scoring rules
     - No technical jargon or rule identifiers in output
