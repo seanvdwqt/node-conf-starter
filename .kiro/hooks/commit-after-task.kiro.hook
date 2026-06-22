@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Commit After Task Completion",
+  "description": "After a spec task is marked as completed, stage all changes and create a git commit with a message referencing the completed task.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A spec task just completed successfully. Stage all changed files with `git add -A` and create a commit with a descriptive message that references the task that was just completed. Use conventional commit format like: \"feat(squad-assembly): [brief description of what was implemented]\". Do not push to remote."
+  }
+}

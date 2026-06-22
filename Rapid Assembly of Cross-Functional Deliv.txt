@@ -1,0 +1,170 @@
+Rapid Assembly of Cross-Functional Delivery Squads – Complete Requirements
+ 
+1. User Stories (with Acceptance Criteria & Business Rules)
+User Story 1: Create Delivery Squad Request
+As a Delivery Lead
+I want to create a delivery request
+So that I can define work requirements quickly
+Acceptance Criteria
+•	Given I am creating a request
+When I open the form
+Then I can input all required fields
+•	Given required fields are missing
+When I submit
+Then submission is blocked with highlighted errors
+•	Given invalid duration or past date
+When I proceed
+Then validation prevents submission
+Business Rules
+•	BR-001: Mandatory fields must be completed
+•	BR-002: Duration must be positive numeric
+•	BR-003: Start date must not be in the past
+•	BR-004: Requests limited to one business unit
+ 
+User Story 2: Define Roles and Skills
+As a Delivery Lead
+I want to define roles and skills
+So that candidates can be matched
+Acceptance Criteria
+•	Given I select a role
+When I view skills
+Then relevant skills are displayed
+•	Given I select skills
+When configuring them
+Then I can mark mandatory/preferred
+•	Given skill not found
+When needed
+Then I can add as “other”
+Business Rules
+•	BR-005: Each role must have ≥1 skill
+•	BR-006: At least one mandatory skill per role
+•	BR-007: Roles must be predefined
+ 
+User Story 3: Generate Candidate Recommendations
+As a Delivery Lead
+I want to get ranked candidates
+So that I can identify best-fit resources
+Acceptance Criteria
+•	Given I request recommendations
+When matching runs
+Then candidates are evaluated
+•	Given candidate lacks mandatory skills
+When matching occurs
+Then they are excluded
+•	Given candidate unavailable
+When evaluated
+Then excluded
+Business Rules
+•	BR-008: Matching must be rules-based
+•	BR-009: Mandatory skill mismatch = exclusion
+•	BR-010: Availability must impact ranking
+•	BR-011: High urgency prioritises availability
+ 
+User Story 4: View Recommendations
+As a Delivery Lead
+I want to see ranked and explained results
+So that I can make informed decisions
+Acceptance Criteria
+•	Given results generated
+When displayed
+Then ranked shortlist per role appears
+•	Given candidate selected
+When details viewed
+Then explanation and score shown
+Business Rules
+•	BR-012: Recommendations must be explainable
+•	BR-013: Ranking sorted by score + availability
+•	BR-014: Missing roles must be flagged
+ 
+User Story 5: Assemble Squad
+As a Delivery Lead
+I want to select candidates
+So that I can form a squad
+Acceptance Criteria
+•	Given I select a candidate
+When added
+Then added to squad
+•	Given high workload/low availability
+When selected
+Then warning displayed
+•	Given incomplete squad
+When finalising
+Then blocked
+Business Rules
+•	BR-015: All mandatory roles must be filled
+•	BR-016: One candidate per role (prototype simplification)
+•	BR-017: Warnings required for risk selections
+ 
+User Story 6: Final Review
+As a Delivery Lead
+I want to review and finalise
+So that I confirm the squad
+Acceptance Criteria
+•	Given squad exists
+When reviewing
+Then full details shown
+•	Given process completed
+When closed
+Then reset allowed
+Business Rules
+•	BR-018: Full audit view required before completion
+•	BR-019: Prototype requires no persistence
+ 
+2. Functional Requirements (EARS Format)
+Delivery Request Capture
+•	REQ-001: The system shall allow creation of squad requests using mock data.
+•	REQ-002: The system shall capture all required request attributes.
+•	REQ-003: When a request is submitted, the system shall validate mandatory fields.
+•	REQ-004: If mandatory data is missing, then the system shall block submission.
+•	REQ-005: If duration is invalid, then the system shall reject input.
+•	REQ-006: If start date is in the past, then the system shall prevent matching.
+Roles and Skills
+•	REQ-007: The system shall restrict requests to a single business unit.
+•	REQ-008: The system shall allow selection of predefined roles.
+•	REQ-009: When a role is selected, the system shall display relevant skills.
+•	REQ-010: The system shall allow marking skills mandatory/preferred.
+•	REQ-011: The system shall represent availability using capacity indicators.
+•	REQ-012: If skill not found, then the system shall allow “other” entry.
+Matching and Ranking
+•	REQ-013: When recommendations are requested, the system shall evaluate candidates.
+•	REQ-014: The system shall calculate match scores.
+•	REQ-015: If mandatory skills are missing, then exclude candidate.
+•	REQ-016: If candidate unavailable, then exclude candidate.
+•	REQ-017: If partially available, then reduce ranking.
+•	REQ-018: If workload exceeds threshold, then reduce ranking.
+•	REQ-019: Where urgency is high, prioritise availability.
+•	REQ-020: While scores equal, rank by availability.
+•	REQ-021: While insufficient matches, display gaps.
+Output and Selection
+•	REQ-022: When matching completes, display ranked shortlist.
+•	REQ-023: The system shall show candidate details and score.
+•	REQ-024: The system shall display recommendation explanations.
+•	REQ-025: When shortlist displayed, allow squad selection.
+•	REQ-026: If risk candidate selected, then display warning.
+•	REQ-027: While roles incomplete, block finalisation.
+•	REQ-028: When squad complete, allow review and closure.
+ 
+3. Non-Functional Requirements
+Performance
+•	NFR-001: The system shall return recommendations within ≤ 3 seconds
+•	NFR-002: The system shall support at least 50 concurrent users (prototype level)
+Usability
+•	NFR-003: The system shall provide an intuitive UI with minimal training required
+•	NFR-004: The system shall complete the full workflow in ≤ 5 steps
+•	NFR-005: The system shall clearly explain recommendations in plain language
+Reliability
+•	NFR-006: The system shall handle invalid inputs gracefully
+•	NFR-007: The system shall not crash during incomplete submissions
+Scalability (Prototype-Constrained)
+•	NFR-008: The system shall operate within a limited dataset (mock talent pool)
+•	NFR-009: The system shall support extension to real systems in future
+Security & Data
+•	NFR-010: The system shall use mock data only
+•	NFR-011: The system shall not store or expose sensitive information
+Maintainability
+•	NFR-012: The system shall use modular logic for scoring rules
+•	NFR-013: The system shall allow easy adjustment of scoring weights
+Transparency
+•	NFR-014: The system shall provide full traceability of scoring decisions
+•	NFR-015: The system shall display reasoning for inclusion/exclusion
+ 
