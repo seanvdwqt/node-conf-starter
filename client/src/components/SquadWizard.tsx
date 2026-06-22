@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import CreateRequestStep from './steps/CreateRequestStep';
+import type { TeamSuggestion } from './InstantSquadSearch';
 
 /** Step labels for the 5-step wizard */
 const STEP_LABELS = [
@@ -33,6 +34,11 @@ export interface WizardState {
   squadRequestId: string | null;
   requestData: SquadRequestData;
   selections: RoleSelection[];
+  selectedSuggestion: TeamSuggestion | null;
+}
+
+export interface SquadWizardProps {
+  initialSuggestion?: TeamSuggestion | null;
 }
 
 const INITIAL_REQUEST_DATA: SquadRequestData = {
@@ -50,10 +56,22 @@ const INITIAL_STATE: WizardState = {
   squadRequestId: null,
   requestData: INITIAL_REQUEST_DATA,
   selections: [],
+  selectedSuggestion: null,
 };
 
-export default function SquadWizard() {
+export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}) {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
+
+  // Jump to step 4 when an initial suggestion is provided from InstantSquadSearch
+  useEffect(() => {
+    if (initialSuggestion) {
+      setState((prev) => ({
+        ...prev,
+        currentStep: 4,
+        selectedSuggestion: initialSuggestion,
+      }));
+    }
+  }, [initialSuggestion]);
 
   const { currentStep } = state;
 
@@ -121,7 +139,31 @@ export default function SquadWizard() {
         return (
           <div data-testid="step-4-placeholder" className="p-6 text-center text-gray-500">
             <h2 className="text-xl font-semibold text-gray-700 mb-2">Assemble Squad</h2>
-            <p>Step 4: Select candidates to form your proposed squad.</p>
+            {state.selectedSuggestion ? (
+              <div className="text-left">
+                <p className="text-sm text-indigo-600 mb-3">
+                  Pre-populated from search suggestion (Team Score: {state.selectedSuggestion.teamScore})
+                </p>
+                <div className="space-y-2">
+                  {state.selectedSuggestion.members.map((member) => (
+                    <div
+                      key={member.candidateId}
+                      className="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-100 rounded-lg"
+                    >
+                      <div>
+                        <span className="font-medium text-gray-800">{member.name}</span>
+                        <span className="ml-2 text-sm text-indigo-600">{member.role}</span>
+                      </div>
+                      <span className="text-sm font-semibold text-green-600">
+                        Score: {member.matchScore}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p>Step 4: Select candidates to form your proposed squad.</p>
+            )}
           </div>
         );
       case 5:

@@ -267,7 +267,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
 - [x] 9. Checkpoint — full-stack integration
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 10. Instant Squad Search feature
+- [x] 10. Instant Squad Search feature
   - [x] 10.1 Implement query parser / tokenizer
     - Create `server/src/search/queryParser.ts`
     - Tokenize input text into structured criteria: extract role keywords (mapped to predefined roles), skill keywords (fuzzy-matched against skill list), quantity indicators (e.g. "2 engineers"), urgency signals (e.g. "urgent", "ASAP", "immediately")
@@ -306,7 +306,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Clicking a card pre-populates wizard step 4 with the suggested selections
     - _Requirements: 11.5, 11.7_
 
-  - [~] 10.6 Wire search into landing page
+  - [x] 10.6 Wire search into landing page
     - Update `client/src/App.tsx` to show InstantSquadSearch as the landing view above/alongside the wizard
     - When a team suggestion is selected, create a squad request with extracted criteria and jump to step 4
     - _Requirements: 11.7_
