@@ -6,7 +6,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
 
 ## Tasks
 
-- [ ] 1. Data layer — Prisma schema and seed script
+- [x] 1. Data layer — Prisma schema and seed script
   - [x] 1.1 Extend Prisma schema with squad assembly models
     - Add Candidate (with yearsExperience, currentTeam), CandidateProject, Role, Skill, RoleSkill, CandidateSkill (proficiency 1–3), SquadRequest, RequestRole, RequestSkill (with requiredProficiency), and SquadSelection models to `server/prisma/schema.prisma`
     - Keep the existing User model untouched
@@ -14,7 +14,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Run `npx prisma generate` to update the client
     - _Requirements: 1.2, 3.1, 3.4, 4.1, 5.2, 6.1, 6.2_
 
-  - [~] 1.2 Create mock data seed script
+  - [x] 1.2 Create mock data seed script
     - Create `server/prisma/seed.ts` using Prisma upsert for idempotency
     - Seed 6 fixed roles (architect, engineer, tester, data specialist, business analyst, delivery lead)
     - Seed ~30 predefined skills (5 per role average) across categories (technical, domain, soft)
@@ -25,7 +25,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Add `"prisma": { "seed": "npx tsx prisma/seed.ts" }` to `server/package.json`
     - _Requirements: 2.1, 6.1, 6.2, 6.3, 6.4, 11.3_
 
-  - [~] 1.3 Create Prisma client singleton
+  - [x] 1.3 Create Prisma client singleton
     - Create `server/src/lib/prisma.ts` exporting a shared PrismaClient instance
     - _Requirements: 10.1_
 
