@@ -139,7 +139,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
 - [x] 4. Checkpoint — data layer and scoring engine
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. API routes and services
+- [x] 5. API routes and services
   - [x] 5.1 Create squad request service
     - Create `server/src/services/squadRequest.service.ts`
     - Implement create, getById, updateRoles, saveSquad, finalise operations
@@ -155,7 +155,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Detect gaps (roles with zero matching candidates)
     - _Requirements: 5.1, 5.9, 6.1_
 
-  - [~] 5.3 Implement API route handlers
+  - [x] 5.3 Implement API route handlers
     - Extend `server/src/routes/api.ts` or create `server/src/routes/squadRequests.ts`
     - `POST /api/squad-requests` — validate input, create request, return 201
     - `PATCH /api/squad-requests/:id/roles` — update roles and skills for request

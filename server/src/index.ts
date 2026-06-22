@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { apiRouter } from './routes/api.js';
+import { squadRequestsRouter } from './routes/squadRequests.js';
 import { errorHandler } from './middleware/errorHandler.js';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api', apiRouter);
+app.use('/api', squadRequestsRouter);
 
 // Health check
 app.get('/health', (_req, res) => {
