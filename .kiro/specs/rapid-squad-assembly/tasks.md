@@ -183,18 +183,18 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Mock Prisma client
     - _Requirements: 1.3, 1.4, 10.2_
 
-- [~] 6. Checkpoint — API layer
+- [x] 6. Checkpoint — API layer
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Frontend — wizard container and shared UI components
-  - [~] 7.1 Create wizard container and step navigation
+- [x] 7. Frontend — wizard container and shared UI components
+  - [x] 7.1 Create wizard container and step navigation
     - Create `client/src/components/SquadWizard.tsx`
     - Manage wizard state: current step (1–5), squad request data, selections
     - Implement forward/back navigation with step validation
     - Restrict to 5 screens maximum
     - _Requirements: 8.5_
 
-  - [~] 7.2 Create shared UI components
+  - [x] 7.2 Create shared UI components
     - Create `client/src/components/ui/CandidateCard.tsx` — displays candidate name, role, skills with proficiency dots, experience, current team, previous projects, score, availability, workload
     - Create `client/src/components/ui/ScoreBadge.tsx` — numeric match score with colour coding
     - Create `client/src/components/ui/AvailabilityBadge.tsx` — availability indicator with colour (green/amber/red)
@@ -204,7 +204,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Use Tailwind CSS for all styling
     - _Requirements: 6.5, 6.6, 7.2, 5.9_
 
-  - [~] 7.3 Create API client utility
+  - [x] 7.3 Create API client utility
     - Create `client/src/api/squadRequests.ts`
     - Typed fetch wrappers for all 7 API endpoints
     - Error handling: parse error responses, preserve form state on failure
