@@ -343,7 +343,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Test no-match message displays for unrecognised input
     - _Requirements: 11.1, 11.2, 11.4, 11.6, 11.7_
 
-- [~] 12. Final checkpoint
+- [x] 12. Final checkpoint
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
