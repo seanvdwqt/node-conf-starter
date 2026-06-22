@@ -211,7 +211,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - _Requirements: 10.2_
 
 - [ ] 8. Frontend — wizard steps
-  - [~] 8.1 Implement Step 1: Create Request form
+  - [x] 8.1 Implement Step 1: Create Request form
     - Create `client/src/components/steps/CreateRequestStep.tsx`
     - Form fields: title (max 100), business unit (fixed "Digital Platforms"), objective (max 500), urgency dropdown, start date picker, duration weeks (1–52), required capacity (10–100 step 10)
     - Client-side validation with inline error messages (Tailwind `text-red-500`)
@@ -219,7 +219,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - Call `POST /api/squad-requests` on submit
     - _Requirements: 1.2, 1.3, 1.4, 1.5, 1.6, 2.3, 10.2_
 
-  - [~] 8.2 Implement Step 2: Define Roles & Skills with Proficiency
+  - [x] 8.2 Implement Step 2: Define Roles & Skills with Proficiency
     - Create `client/src/components/steps/DefineRolesStep.tsx`
     - Fetch roles from `GET /api/roles`
     - Allow selecting one or more roles from the 6 predefined options

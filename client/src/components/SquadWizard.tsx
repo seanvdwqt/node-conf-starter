@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import CreateRequestStep from './steps/CreateRequestStep';
 
 /** Step labels for the 5-step wizard */
 const STEP_LABELS = [
@@ -73,8 +74,8 @@ export default function SquadWizard() {
     });
   }, []);
 
-  // These setters will be passed to step components in tasks 8.x
-  const _setSquadRequestId = useCallback((id: string) => {
+  // These setters will be passed to step components
+  const setSquadRequestId = useCallback((id: string) => {
     setState((prev) => ({ ...prev, squadRequestId: id }));
   }, []);
 
@@ -90,19 +91,18 @@ export default function SquadWizard() {
   }, []);
 
   // Expose setters for step components (suppresses unused-var warnings until wired up)
-  void _setSquadRequestId;
   void _setRequestData;
   void _setSelections;
+
+  const handleRequestCreated = useCallback((id: string) => {
+    setSquadRequestId(id);
+    goNext();
+  }, [setSquadRequestId, goNext]);
 
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <div data-testid="step-1-placeholder" className="p-6 text-center text-gray-500">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Create Request</h2>
-            <p>Step 1: Create a new squad request with delivery details.</p>
-          </div>
-        );
+        return <CreateRequestStep onCreated={handleRequestCreated} />;
       case 2:
         return (
           <div data-testid="step-2-placeholder" className="p-6 text-center text-gray-500">

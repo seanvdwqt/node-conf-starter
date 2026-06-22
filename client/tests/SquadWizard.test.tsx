@@ -11,7 +11,7 @@ describe('SquadWizard', () => {
   it('starts on step 1', () => {
     render(<SquadWizard />);
     expect(screen.getByText('Step 1 of 5')).toBeInTheDocument();
-    expect(screen.getByTestId('step-1-placeholder')).toBeInTheDocument();
+    expect(screen.getByTestId('create-request-form')).toBeInTheDocument();
   });
 
   it('has back button disabled on step 1', () => {
@@ -35,7 +35,7 @@ describe('SquadWizard', () => {
     const backBtn = screen.getByTestId('wizard-back-btn');
     fireEvent.click(backBtn);
     expect(screen.getByText('Step 1 of 5')).toBeInTheDocument();
-    expect(screen.getByTestId('step-1-placeholder')).toBeInTheDocument();
+    expect(screen.getByTestId('create-request-form')).toBeInTheDocument();
   });
 
   it('shows all 5 step indicators', () => {
@@ -51,7 +51,11 @@ describe('SquadWizard', () => {
 
     for (let step = 1; step <= 5; step++) {
       expect(screen.getByText(`Step ${step} of 5`)).toBeInTheDocument();
-      expect(screen.getByTestId(`step-${step}-placeholder`)).toBeInTheDocument();
+      if (step === 1) {
+        expect(screen.getByTestId('create-request-form')).toBeInTheDocument();
+      } else {
+        expect(screen.getByTestId(`step-${step}-placeholder`)).toBeInTheDocument();
+      }
       if (step < 5) fireEvent.click(nextBtn);
     }
   });
