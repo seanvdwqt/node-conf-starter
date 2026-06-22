@@ -136,18 +136,18 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - **Property 3: Availability Indicator Classification** — correct classification for all integers 0–100 and null
     - **Validates: Requirements 1.2, 1.3, 1.4, 1.5, 3.4, 4.1, 4.3**
 
-- [~] 4. Checkpoint — data layer and scoring engine
+- [x] 4. Checkpoint — data layer and scoring engine
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. API routes and services
-  - [~] 5.1 Create squad request service
+  - [x] 5.1 Create squad request service
     - Create `server/src/services/squadRequest.service.ts`
     - Implement create, getById, updateRoles, saveSquad, finalise operations
     - Use Prisma client for all DB operations
     - Enforce business unit restriction ("Digital Platforms")
     - _Requirements: 1.1, 1.2, 1.7, 2.1, 7.1, 8.3_
 
-  - [~] 5.2 Create scoring service
+  - [x] 5.2 Create scoring service
     - Create `server/src/services/scoring.service.ts`
     - Query candidates from DB filtered by business unit
     - Map DB records to CandidateContext objects
@@ -166,7 +166,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - `GET /api/candidates` — return all candidates in talent pool
     - _Requirements: 1.1, 1.3, 1.7, 3.1, 5.1, 7.1, 7.3, 8.3_
 
-  - [~] 5.4 Implement missing roles detection utility
+  - [x] 5.4 Implement missing roles detection utility
     - Create `server/src/utils/missingRoles.ts`
     - Given a squad request's roles and current selections, return the set of unfilled mandatory roles
     - _Requirements: 7.3, 8.1_
