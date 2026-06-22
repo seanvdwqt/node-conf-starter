@@ -69,11 +69,14 @@ export interface CreateSquadRequestInput {
 }
 
 export interface RoleSkillInput {
-  skillId: string;
-  priority: 'mandatory' | 'preferred';
+  skillId: string | null;
+  name?: string;
+  priority?: 'mandatory' | 'preferred';
+  category?: 'mandatory' | 'preferred';
   requiredProficiency?: number;
   isCustom?: boolean;
   customName?: string;
+  customDescription?: string;
 }
 
 export interface RoleInput {
@@ -212,18 +215,49 @@ export async function updateRoles(id: string, roles: RoleInput[]) {
 
   // Create new roles with their skills
   for (const role of roles) {
+    // Resolve skill IDs — for custom skills with null skillId, create a Skill record
+    const resolvedSkills = [];
+    for (const skill of role.skills) {
+      let resolvedSkillId = skill.skillId;
+      const isCustom = skill.isCustom ?? false;
+      const customName = skill.customName ?? skill.customDescription ?? skill.name ?? null;
+
+      if (!resolvedSkillId && isCustom && customName) {
+        // Create or find a custom skill
+        const existing = await prisma.skill.findUnique({ where: { name: customName } });
+        if (existing) {
+          resolvedSkillId = existing.id;
+        } else {
+          const created = await prisma.skill.create({
+            data: { name: customName, category: 'other' },
+          });
+          resolvedSkillId = created.id;
+        }
+      }
+
+      if (!resolvedSkillId) {
+        // Skip skills without a valid ID (shouldn't happen for predefined skills)
+        continue;
+      }
+
+      // Accept both 'priority' and 'category' field names from client
+      const priority = skill.priority ?? skill.category ?? 'preferred';
+
+      resolvedSkills.push({
+        skillId: resolvedSkillId,
+        priority,
+        requiredProficiency: skill.requiredProficiency ?? 1,
+        isCustom,
+        customName: isCustom ? customName : null,
+      });
+    }
+
     await prisma.requestRole.create({
       data: {
         squadRequestId: id,
         roleId: role.roleId,
         skills: {
-          create: role.skills.map((skill) => ({
-            skillId: skill.skillId,
-            priority: skill.priority,
-            requiredProficiency: skill.requiredProficiency ?? 1,
-            isCustom: skill.isCustom ?? false,
-            customName: skill.customName ?? null,
-          })),
+          create: resolvedSkills,
         },
       },
     });

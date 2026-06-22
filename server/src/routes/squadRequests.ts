@@ -264,6 +264,13 @@ squadRequestsRouter.post('/squad-search', async (req: Request, res: Response) =>
       },
     });
 
+    // 3b. Build a skill name → ID lookup map for accurate scoring
+    const allSkills = await prisma.skill.findMany();
+    const skillIdMap = new Map<string, string>();
+    for (const skill of allSkills) {
+      skillIdMap.set(skill.name.toLowerCase(), skill.id);
+    }
+
     // 4. Map to CandidateContext objects
     const candidates: CandidateContext[] = dbCandidates.map((c) => {
       const skills: CandidateSkillInfo[] = c.skills.map((cs) => ({
@@ -292,7 +299,7 @@ squadRequestsRouter.post('/squad-search', async (req: Request, res: Response) =>
     });
 
     // 5. Call composeTeams
-    const suggestions = composeTeams(candidates, parsed);
+    const suggestions = composeTeams(candidates, parsed, undefined, skillIdMap);
 
     // 6. Return parsed criteria + suggestions
     res.status(200).json({ parsed, suggestions });

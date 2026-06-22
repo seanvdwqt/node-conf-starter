@@ -48,12 +48,14 @@ export interface TeamSuggestion {
  * @param candidates - All available candidates in the talent pool
  * @param parsed - The structured query parsed from user input
  * @param config - Optional scoring configuration overrides
+ * @param skillIdMap - Optional mapping of skill name (lowercased) to actual DB skill ID
  * @returns Up to 5 team suggestions, ranked by combined team score
  */
 export function composeTeams(
   candidates: CandidateContext[],
   parsed: ParsedQuery,
   config?: ScoringConfig,
+  skillIdMap?: Map<string, string>,
 ): TeamSuggestion[] {
   const cfg = config ?? DEFAULT_SCORING_CONFIG;
 
@@ -63,15 +65,28 @@ export function composeTeams(
 
   // If we have skills but no roles, search across all candidates for skill matches
   if (parsed.roles.length === 0 && parsed.skills.length > 0) {
-    return composeSkillBasedTeams(candidates, parsed, cfg);
+    return composeSkillBasedTeams(candidates, parsed, cfg, skillIdMap);
   }
 
   // Build scored shortlists per role
   const roleShortlists = new Map<string, ReturnType<typeof scoreCandidates>>();
 
   for (const parsedRole of parsed.roles) {
-    const requestContext = buildRequestContext(parsed);
-    const scored = scoreCandidates(candidates, requestContext, cfg);
+    // When no skills are specified, prefer candidates whose currentRole matches
+    // the requested role by filtering the candidate pool first
+    let pool = candidates;
+    if (parsed.skills.length === 0) {
+      const roleMatched = candidates.filter(
+        (c) => c.currentRole.toLowerCase() === parsedRole.name.toLowerCase(),
+      );
+      // Use role-matched pool if we have enough candidates, otherwise fall back to all
+      if (roleMatched.length > 0) {
+        pool = roleMatched;
+      }
+    }
+
+    const requestContext = buildRequestContext(parsed, skillIdMap);
+    const scored = scoreCandidates(pool, requestContext, cfg);
     roleShortlists.set(parsedRole.name, scored);
   }
 
@@ -172,8 +187,9 @@ function composeSkillBasedTeams(
   candidates: CandidateContext[],
   parsed: ParsedQuery,
   config: ScoringConfig,
+  skillIdMap?: Map<string, string>,
 ): TeamSuggestion[] {
-  const requestContext = buildRequestContext(parsed);
+  const requestContext = buildRequestContext(parsed, skillIdMap);
   const scored = scoreCandidates(candidates, requestContext, config);
 
   if (scored.length === 0) return [];
@@ -217,13 +233,20 @@ function composeSkillBasedTeams(
 /**
  * Builds a RequestContext from the parsed query for scoring.
  * Treats all extracted skills as mandatory skills with proficiency level 1.
+ *
+ * @param parsed - The parsed query
+ * @param skillIdMap - Optional mapping of skill name (lowercased) to actual DB skill ID.
+ *                     When provided, enables accurate ID-based matching in the scoring engine.
  */
-function buildRequestContext(parsed: ParsedQuery) {
-  const mandatorySkills: RequestedSkill[] = parsed.skills.map((skill) => ({
-    skillId: skill.toLowerCase().replace(/\s+/g, '-'),
-    name: skill,
-    requiredProficiency: 1 as ProficiencyLevel,
-  }));
+export function buildRequestContext(parsed: ParsedQuery, skillIdMap?: Map<string, string>) {
+  const mandatorySkills: RequestedSkill[] = parsed.skills.map((skill) => {
+    const resolvedId = skillIdMap?.get(skill.toLowerCase()) ?? skill.toLowerCase().replace(/\s+/g, '-');
+    return {
+      skillId: resolvedId,
+      name: skill,
+      requiredProficiency: 1 as ProficiencyLevel,
+    };
+  });
 
   return {
     urgency: (parsed.urgency ?? 'medium') as UrgencyLevel,

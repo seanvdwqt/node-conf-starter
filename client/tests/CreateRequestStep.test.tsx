@@ -66,10 +66,12 @@ describe('CreateRequestStep', () => {
     await waitFor(() => {
       expect(screen.getByTestId('error-title')).toHaveTextContent('Title is required');
       expect(screen.getByTestId('error-objective')).toHaveTextContent('Objective is required');
-      expect(screen.getByTestId('error-start-date')).toHaveTextContent('Start date is required');
       expect(screen.getByTestId('error-duration')).toHaveTextContent('Duration is required');
-      expect(screen.getByTestId('error-capacity')).toHaveTextContent('Required capacity is required');
     });
+
+    // startDate and capacity have defaults now, so no errors for those
+    expect(screen.queryByTestId('error-start-date')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('error-capacity')).not.toBeInTheDocument();
 
     expect(mockCreateSquadRequest).not.toHaveBeenCalled();
     expect(onCreated).not.toHaveBeenCalled();

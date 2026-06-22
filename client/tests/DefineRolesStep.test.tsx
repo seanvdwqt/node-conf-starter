@@ -6,10 +6,11 @@ import type { RoleWithSkills } from '../src/api/squadRequests';
 // Mock API module
 vi.mock('../src/api/squadRequests', () => ({
   getRoles: vi.fn(),
+  getCandidates: vi.fn(),
   updateRoles: vi.fn(),
 }));
 
-import { getRoles, updateRoles } from '../src/api/squadRequests';
+import { getRoles, getCandidates, updateRoles } from '../src/api/squadRequests';
 
 const mockRoles: RoleWithSkills[] = [
   {
@@ -53,6 +54,7 @@ describe('DefineRolesStep', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (getRoles as ReturnType<typeof vi.fn>).mockResolvedValue(mockRoles);
+    (getCandidates as ReturnType<typeof vi.fn>).mockResolvedValue([]);
     (updateRoles as ReturnType<typeof vi.fn>).mockResolvedValue({});
   });
 
@@ -66,8 +68,8 @@ describe('DefineRolesStep', () => {
     await waitFor(() => {
       expect(screen.getByTestId('define-roles-step')).toBeInTheDocument();
     });
-    expect(screen.getByText('engineer')).toBeInTheDocument();
-    expect(screen.getByText('tester')).toBeInTheDocument();
+    expect(screen.getByTestId('role-card-role-1')).toBeInTheDocument();
+    expect(screen.getByTestId('role-card-role-2')).toBeInTheDocument();
   });
 
   it('displays error when roles fetch fails', async () => {

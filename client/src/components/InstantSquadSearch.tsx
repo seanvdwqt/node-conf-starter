@@ -279,16 +279,7 @@ export const InstantSquadSearch: React.FC<InstantSquadSearchProps> = ({
               <p className="text-sm text-gray-600 mb-3">{suggestion.explanation}</p>
               <div className="flex flex-wrap gap-2">
                 {suggestion.members.map((member) => (
-                  <span
-                    key={member.candidateId}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700"
-                  >
-                    <span className="font-medium">{member.name}</span>
-                    <span className="text-gray-400">·</span>
-                    <span className="text-indigo-600">{member.role}</span>
-                    <span className="text-gray-400">·</span>
-                    <span className="text-green-600">{member.matchScore}</span>
-                  </span>
+                  <MemberChip key={member.candidateId} member={member} />
                 ))}
               </div>
             </button>
@@ -298,5 +289,92 @@ export const InstantSquadSearch: React.FC<InstantSquadSearchProps> = ({
     </div>
   );
 };
+
+// ---------------------------------------------------------------------------
+// Tooltip sub-component
+// ---------------------------------------------------------------------------
+
+interface MemberTooltipProps {
+  member: TeamMember;
+}
+
+/**
+ * Hover tooltip showing a team member's matched skills with proficiency dots
+ * and years of experience.
+ */
+function MemberTooltip({ member }: MemberTooltipProps) {
+  return (
+    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-56 rounded-lg border border-gray-200 bg-white p-3 shadow-lg pointer-events-none">
+      {/* Arrow */}
+      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
+        <div className="h-2 w-2 rotate-45 border-b border-r border-gray-200 bg-white" />
+      </div>
+
+      <p className="text-xs font-semibold text-gray-800 mb-1">{member.name}</p>
+      <p className="text-xs text-gray-500 mb-2">
+        {member.role} · {member.yearsExperience} yrs experience
+      </p>
+
+      {/* Skills with proficiency dots */}
+      {member.matchedSkills.length > 0 && (
+        <div>
+          <p className="text-xs font-medium text-gray-500 mb-1">Skills</p>
+          <div className="flex flex-wrap gap-1.5">
+            {member.matchedSkills.map((skill) => (
+              <span
+                key={skill.name}
+                className="inline-flex items-center gap-1 rounded bg-gray-50 px-1.5 py-0.5 text-xs text-gray-700"
+              >
+                {skill.name}
+                <span className="inline-flex items-center gap-0.5" aria-label={`Proficiency ${skill.proficiency} of 3`}>
+                  {[1, 2, 3].map((dot) => (
+                    <span
+                      key={dot}
+                      className={`inline-block h-1.5 w-1.5 rounded-full ${
+                        dot <= skill.proficiency ? 'bg-indigo-500' : 'bg-gray-200'
+                      }`}
+                    />
+                  ))}
+                </span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {member.matchedSkills.length === 0 && (
+        <p className="text-xs text-gray-400 italic">No matched skills data</p>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Member chip with hover tooltip
+// ---------------------------------------------------------------------------
+
+interface MemberChipProps {
+  member: TeamMember;
+}
+
+function MemberChip({ member }: MemberChipProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <span
+      className="relative inline-flex items-center gap-1 px-2 py-1 bg-gray-50 border border-gray-200 rounded text-xs text-gray-700 cursor-default"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <span className="font-medium">{member.name}</span>
+      <span className="text-gray-400">·</span>
+      <span className="text-indigo-600">{member.role}</span>
+      <span className="text-gray-400">·</span>
+      <span className="text-green-600">{member.matchScore}</span>
+
+      {hovered && <MemberTooltip member={member} />}
+    </span>
+  );
+}
 
 export default InstantSquadSearch;

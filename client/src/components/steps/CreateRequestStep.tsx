@@ -31,9 +31,9 @@ const INITIAL_FORM: FormData = {
   businessUnit: 'Digital Platforms',
   objective: '',
   urgency: 'medium',
-  startDate: '',
+  startDate: getTodayString(),
   durationWeeks: '',
-  requiredCapacity: '',
+  requiredCapacity: '10',
 };
 
 function getTodayString(): string {
@@ -292,8 +292,8 @@ export default function CreateRequestStep({ onCreated }: CreateRequestStepProps)
           className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           data-testid="input-capacity"
         >
-          <option value="">Select capacity...</option>
-          {[10, 20, 30, 40, 50, 60, 70, 80, 90, 100].map((val) => (
+          <option value="10">Any (10% minimum)</option>
+          {[20, 30, 40, 50, 60, 70, 80, 90, 100].map((val) => (
             <option key={val} value={String(val)}>
               {val}%
             </option>

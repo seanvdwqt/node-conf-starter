@@ -28,6 +28,9 @@ const ROLE_SKILLS: Record<string, { name: string; category: string }[]> = {
     { name: "REST APIs", category: "technical" },
     { name: "SQL", category: "technical" },
     { name: "Git", category: "technical" },
+    { name: "Playwright", category: "technical" },
+    { name: "Java", category: "technical" },
+    { name: "Angular", category: "technical" },
   ],
   tester: [
     { name: "Test Automation", category: "technical" },

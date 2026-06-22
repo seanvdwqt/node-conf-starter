@@ -1,5 +1,9 @@
 import { useState, useCallback, useEffect } from 'react';
 import CreateRequestStep from './steps/CreateRequestStep';
+import { DefineRolesStep } from './steps/DefineRolesStep';
+import RecommendationsStep from './steps/RecommendationsStep';
+import { AssembleSquadStep } from './steps/AssembleSquadStep';
+import { ReviewFinaliseStep } from './steps/ReviewFinaliseStep';
 import type { TeamSuggestion } from './InstantSquadSearch';
 
 /** Step labels for the 5-step wizard */
@@ -123,55 +127,33 @@ export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}
         return <CreateRequestStep onCreated={handleRequestCreated} />;
       case 2:
         return (
-          <div data-testid="step-2-placeholder" className="p-6 text-center text-gray-500">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Define Roles & Skills</h2>
-            <p>Step 2: Select roles and skills with proficiency levels.</p>
-          </div>
+          <DefineRolesStep
+            squadRequestId={state.squadRequestId!}
+            onCompleted={goNext}
+          />
         );
       case 3:
         return (
-          <div data-testid="step-3-placeholder" className="p-6 text-center text-gray-500">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Recommendations</h2>
-            <p>Step 3: View scored candidate recommendations.</p>
-          </div>
+          <RecommendationsStep
+            squadRequestId={state.squadRequestId!}
+            onCompleted={goNext}
+          />
         );
       case 4:
         return (
-          <div data-testid="step-4-placeholder" className="p-6 text-center text-gray-500">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Assemble Squad</h2>
-            {state.selectedSuggestion ? (
-              <div className="text-left">
-                <p className="text-sm text-indigo-600 mb-3">
-                  Pre-populated from search suggestion (Team Score: {state.selectedSuggestion.teamScore})
-                </p>
-                <div className="space-y-2">
-                  {state.selectedSuggestion.members.map((member) => (
-                    <div
-                      key={member.candidateId}
-                      className="flex items-center justify-between p-3 bg-indigo-50 border border-indigo-100 rounded-lg"
-                    >
-                      <div>
-                        <span className="font-medium text-gray-800">{member.name}</span>
-                        <span className="ml-2 text-sm text-indigo-600">{member.role}</span>
-                      </div>
-                      <span className="text-sm font-semibold text-green-600">
-                        Score: {member.matchScore}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <p>Step 4: Select candidates to form your proposed squad.</p>
-            )}
-          </div>
+          <AssembleSquadStep
+            squadRequestId={state.squadRequestId!}
+            onCompleted={goNext}
+          />
         );
       case 5:
         return (
-          <div data-testid="step-5-placeholder" className="p-6 text-center text-gray-500">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Review & Finalise</h2>
-            <p>Step 5: Review your selections and finalise the squad.</p>
-          </div>
+          <ReviewFinaliseStep
+            squadRequestId={state.squadRequestId!}
+            onFinalised={() => {}}
+            onReset={() => setState((prev) => ({ ...prev, currentStep: 4 }))}
+            onBack={goBack}
+          />
         );
       default:
         return null;

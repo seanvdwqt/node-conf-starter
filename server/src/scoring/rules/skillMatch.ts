@@ -19,6 +19,14 @@ export function createSkillMatchRule(weight: number): ScoringRule {
       const totalMandatory = request.mandatorySkills.length;
       const totalPreferred = request.preferredSkills.length;
 
+      // When no mandatory skills are specified (role-only search), don't exclude anyone
+      if (totalMandatory === 0 && totalPreferred === 0) {
+        return {
+          score: 50,
+          explanation: 'No specific skills requested; scored neutrally.',
+        };
+      }
+
       const matchedMandatory = request.mandatorySkills.filter((s) =>
         candidateSkillIds.has(s.skillId),
       );
@@ -29,8 +37,8 @@ export function createSkillMatchRule(weight: number): ScoringRule {
       const mandatoryMatched = matchedMandatory.length;
       const preferredMatched = matchedPreferred.length;
 
-      // Exclude candidate if no mandatory skills matched
-      if (mandatoryMatched === 0) {
+      // Exclude candidate if mandatory skills exist but none matched
+      if (totalMandatory > 0 && mandatoryMatched === 0) {
         return {
           score: 0,
           explanation: 'No mandatory skills matched.',
