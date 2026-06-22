@@ -30,7 +30,7 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - _Requirements: 10.1_
 
 - [ ] 2. Scoring engine — rules, config, and engine orchestrator
-  - [~] 2.1 Create scoring configuration and types
+  - [x] 2.1 Create scoring configuration and types
     - Create `server/src/scoring/config.ts` with default ScoringConfig (weights: skillMatch 0.30, proficiency 0.15, experience 0.10, availability 0.20, workload 0.10, urgency 0.15; thresholds: workloadHigh 80, minMandatorySkills 1)
     - Create `server/src/scoring/types.ts` with ScoringRule, RuleResult, CandidateContext (including proficiency levels, yearsExperience, currentTeam, projects), RequestContext (including required proficiency per skill), and ScoringConfig interfaces
     - _Requirements: 10.1, 10.2_
@@ -109,20 +109,20 @@ Build a full-stack prototype for assembling cross-functional delivery squads fro
     - **Property 14: Failing Rule Resilience** — a throwing rule is excluded, remaining rules still produce valid output
     - **Validates: Requirements 10.2, 10.4**
 
-- [ ] 3. Validation utilities and availability classifier
-  - [~] 3.1 Implement squad request validation
+- [x] 3. Validation utilities and availability classifier
+  - [x] 3.1 Implement squad request validation
     - Create `server/src/validation/squadRequest.ts`
     - Validate: title ≤100 chars, objective ≤500 chars, urgency in {low, medium, high}, durationWeeks 1–52 integer, requiredCapacity in {10,20,...,100}, startDate ≥ today, businessUnit = "Digital Platforms"
     - Return array of field-level errors (field name + message)
     - _Requirements: 1.3, 1.4, 1.5, 1.6, 2.3_
 
-  - [~] 3.2 Implement availability classification function
+  - [x] 3.2 Implement availability classification function
     - Create `server/src/utils/availability.ts`
     - Pure function: capacityFree → available | partially_available | unavailable
     - Handle null/undefined → unavailable
     - _Requirements: 4.1, 4.3_
 
-  - [~] 3.3 Implement custom skill validation
+  - [x] 3.3 Implement custom skill validation
     - Create `server/src/validation/customSkill.ts`
     - Validate description length 1–200 characters
     - _Requirements: 3.4_
