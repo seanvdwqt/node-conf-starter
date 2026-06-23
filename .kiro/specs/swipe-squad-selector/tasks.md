@@ -100,7 +100,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
 - [x] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement container component and integrate into App
+- [x] 7. Implement container component and integrate into App
   - [x] 7.1 Implement SwipeSquadSelector container component
     - Create `client/src/swipe/components/SwipeSquadSelector.tsx`
     - Orchestrate useRoles, useCandidates, and useSquadCart hooks
@@ -113,7 +113,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Wire onClose prop to close and return to home page
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 5.6, 10.1, 10.2, 10.4_
 
-  - [~] 7.2 Integrate SwipeSquadSelector into App.tsx
+  - [x] 7.2 Integrate SwipeSquadSelector into App.tsx
     - Add "Swipe to Build" button to App.tsx with gradient styling (pink-500 to purple-600)
     - Add state to toggle SwipeSquadSelector overlay visibility
     - Render SwipeSquadSelector conditionally with onClose handler
