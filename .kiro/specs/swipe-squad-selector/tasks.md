@@ -21,14 +21,14 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - `removeFromCart(cart, candidateId)`: removes matching item preserving order
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 5.1, 5.2, 5.4, 9.1, 9.2, 9.3, 9.4_
 
-- [ ] 2. Implement data layer hooks
-  - [~] 2.1 Implement useRoles and useCandidates data-fetching hooks
+- [x] 2. Implement data layer hooks
+  - [x] 2.1 Implement useRoles and useCandidates data-fetching hooks
     - Create `client/src/swipe/hooks/useRoles.ts` — fetches GET /api/roles, returns `{ roles, loading, error, refetch }`
     - Create `client/src/swipe/hooks/useCandidates.ts` — fetches GET /api/candidates, maps raw data to SwipeCandidate (deriving availability from capacityFree), returns `{ candidates, loading, error, refetch }`
     - Handle loading, error, and success states
     - _Requirements: 1.2, 1.3, 2.1, 2.5, 10.1, 10.4_
 
-  - [~] 2.2 Implement useSquadCart hook
+  - [x] 2.2 Implement useSquadCart hook
     - Create `client/src/swipe/hooks/useSquadCart.ts`
     - Expose: `cart`, `add(candidate, role)`, `remove(candidateId)`, `clear()`, `isFull`, `contains(id)`, `countByRole`
     - Use `addToCart` and `removeFromCart` utility functions internally
