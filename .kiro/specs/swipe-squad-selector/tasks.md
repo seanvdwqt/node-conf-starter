@@ -6,14 +6,14 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
 
 ## Tasks
 
-- [ ] 1. Set up data models, types, and pure utility functions
+- [x] 1. Set up data models, types, and pure utility functions
   - [x] 1.1 Create TypeScript interfaces and types for the swipe feature
     - Create `client/src/swipe/types.ts` with interfaces: `SwipeCandidate`, `CandidateSkill`, `CandidateProject`, `CartItem`, `Role`, `RoleSkill`, `SwipeCallbacks`, `SwipeOptions`, `SwipeState`
     - Define the `Availability` type as `'available' | 'partially_available' | 'unavailable'`
     - Define the role colour mapping constant
     - _Requirements: 7.1, 9.1, 9.2, 9.3_
 
-  - [~] 1.2 Implement pure utility functions
+  - [x] 1.2 Implement pure utility functions
     - Create `client/src/swipe/utils.ts` with functions: `deriveAvailability`, `filterCandidatesByRole`, `addToCart`, `removeFromCart`
     - `deriveAvailability(capacityFree)`: returns availability tier based on thresholds (≥75 → available, 25–74 → partially_available, <25 → unavailable); treat null/undefined as unavailable
     - `filterCandidatesByRole(candidates, roleId, excludeIds)`: filters by role, excludes unavailable and cart members, sorts by availability then experience
