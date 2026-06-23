@@ -34,11 +34,11 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Use `addToCart` and `removeFromCart` utility functions internally
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
 
-- [~] 3. Checkpoint - Ensure all tests pass
+- [x] 3. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 4. Implement useSwipeGesture hook
-  - [~] 4.1 Implement the useSwipeGesture custom hook
+- [x] 4. Implement useSwipeGesture hook
+  - [x] 4.1 Implement the useSwipeGesture custom hook
     - Create `client/src/swipe/hooks/useSwipeGesture.ts`
     - Use Pointer Events API (pointerdown, pointermove, pointerup) for cross-platform touch/mouse support
     - Track drag state: startX, startY, currentX, currentY, startTime
