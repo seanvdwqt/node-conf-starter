@@ -120,7 +120,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Place button between search section and wizard separator
     - _Requirements: 1.1, 1.4_
 
-- [~] 9. Final checkpoint - Ensure all tests pass
+- [x] 9. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
