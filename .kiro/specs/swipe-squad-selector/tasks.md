@@ -97,11 +97,11 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
 
-- [~] 6. Checkpoint - Ensure all tests pass
+- [x] 6. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Implement container component and integrate into App
-  - [~] 7.1 Implement SwipeSquadSelector container component
+  - [x] 7.1 Implement SwipeSquadSelector container component
     - Create `client/src/swipe/components/SwipeSquadSelector.tsx`
     - Orchestrate useRoles, useCandidates, and useSquadCart hooks
     - Manage selectedRole state and filter candidates via filterCandidatesByRole
