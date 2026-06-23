@@ -50,7 +50,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Reset to original position on sub-threshold gestures
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.7, 10.3_
 - [ ] 5. Implement UI components
-  - [~] 5.1 Implement RolePicker component
+  - [x] 5.1 Implement RolePicker component
     - Create `client/src/swipe/components/RolePicker.tsx`
     - Render roles as tappable chips/pills with role colour coding
     - Highlight selected role chip visually
@@ -59,7 +59,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Handle empty/error state for roles
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5_
 
-  - [~] 5.2 Implement SwipeCard component
+  - [x] 5.2 Implement SwipeCard component
     - Create `client/src/swipe/components/SwipeCard.tsx`
     - Display candidate name, role, top 5 skills with proficiency, availability, years experience, current team
     - Show directional hint overlays during drag (skip/next/add icons)
