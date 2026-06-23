@@ -49,7 +49,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Use requestAnimationFrame for smooth drag tracking
     - Reset to original position on sub-threshold gestures
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.7, 10.3_
-- [ ] 5. Implement UI components
+- [x] 5. Implement UI components
   - [x] 5.1 Implement RolePicker component
     - Create `client/src/swipe/components/RolePicker.tsx`
     - Render roles as tappable chips/pills with role colour coding
@@ -66,7 +66,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Apply transform styles for drag animation (translateX, translateY, rotate)
     - _Requirements: 7.1, 7.2_
 
-  - [~] 5.3 Implement SwipeCardStack component
+  - [x] 5.3 Implement SwipeCardStack component
     - Create `client/src/swipe/components/SwipeCardStack.tsx`
     - Render only top 2 cards in DOM (current + peek behind)
     - Integrate useSwipeGesture hook for gesture detection
@@ -77,7 +77,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Retain keyboard focus after actions
     - _Requirements: 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 7.3, 8.1, 8.2, 8.3, 8.4_
 
-  - [~] 5.4 Implement SquadCart component
+  - [x] 5.4 Implement SquadCart component
     - Create `client/src/swipe/components/SquadCart.tsx`
     - Show floating badge with cart count
     - Expand to show list of selected members
@@ -86,7 +86,7 @@ Implement a Tinder-style card-swiping interface for browsing and selecting team 
     - Show toast notification when cart is full and user tries to add
     - _Requirements: 5.1, 5.3, 5.4, 5.7, 10.2_
 
-  - [~] 5.5 Implement CartReview component
+  - [x] 5.5 Implement CartReview component
     - Create `client/src/swipe/components/CartReview.tsx`
     - Group selected members by role, roles ordered alphabetically
     - Candidates within each group ordered by addedAt timestamp
