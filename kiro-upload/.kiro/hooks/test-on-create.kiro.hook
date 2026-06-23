@@ -1,0 +1,13 @@
+{
+  "name": "Run Tests on File Create",
+  "version": "1.0.0",
+  "description": "Run the relevant workspace tests when a new test file is created.",
+  "when": {
+    "type": "fileCreated",
+    "patterns": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npm test"
+  }
+}
