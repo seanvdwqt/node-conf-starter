@@ -47,7 +47,7 @@ describe('RolePicker', () => {
     render(
       <RolePicker
         roles={mockRoles}
-        selectedRole="role-1"
+        selectedRole="engineer"
         onRoleSelect={() => {}}
         cartCountByRole={{}}
       />
@@ -69,7 +69,7 @@ describe('RolePicker', () => {
         roles={mockRoles}
         selectedRole={null}
         onRoleSelect={() => {}}
-        cartCountByRole={{ 'role-1': 3, 'role-3': 1 }}
+        cartCountByRole={{ 'engineer': 3, 'tester': 1 }}
       />
     );
 
@@ -88,7 +88,7 @@ describe('RolePicker', () => {
         roles={mockRoles}
         selectedRole={null}
         onRoleSelect={() => {}}
-        cartCountByRole={{ 'role-1': 0 }}
+        cartCountByRole={{ 'engineer': 0 }}
       />
     );
 
@@ -115,7 +115,7 @@ describe('RolePicker', () => {
     render(
       <RolePicker
         roles={mockRoles}
-        selectedRole="role-1"
+        selectedRole="engineer"
         onRoleSelect={() => {}}
         cartCountByRole={{}}
       />
@@ -141,7 +141,7 @@ describe('RolePicker', () => {
     fireEvent.click(screen.getByText('Architect'));
 
     expect(onRoleSelect).toHaveBeenCalledTimes(1);
-    expect(onRoleSelect).toHaveBeenCalledWith('role-2');
+    expect(onRoleSelect).toHaveBeenCalledWith('architect');
   });
 
   it('shows empty state when roles array is empty', () => {

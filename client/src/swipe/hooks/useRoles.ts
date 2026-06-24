@@ -6,6 +6,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import type { Role } from '../types';
+import { ROLE_COLOUR_MAP } from '../types';
 
 export interface UseRolesResult {
   roles: Role[];
@@ -31,7 +32,14 @@ export function useRoles(): UseRolesResult {
       }
 
       const data = await response.json();
-      setRoles(data);
+      // Enrich roles with displayName and colour from ROLE_COLOUR_MAP
+      const enriched: Role[] = data.map((raw: { id: string; name: string; skills?: Role['skills'] }) => ({
+        ...raw,
+        displayName: raw.name.charAt(0).toUpperCase() + raw.name.slice(1),
+        colour: ROLE_COLOUR_MAP[raw.name.toLowerCase()] ?? 'gray-500',
+        skills: raw.skills ?? [],
+      }));
+      setRoles(enriched);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to fetch roles';
       setError(message);

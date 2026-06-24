@@ -85,15 +85,15 @@ export const RolePicker: React.FC<RolePickerProps> = ({
         aria-label="Role selection"
       >
         {roles.map((role) => {
-          const isSelected = selectedRole === role.id;
-          const count = cartCountByRole[role.id] ?? 0;
+          const isSelected = selectedRole === role.name;
+          const count = cartCountByRole[role.name] ?? 0;
           const colourClasses = getColourClasses(role.name, isSelected);
 
           return (
             <button
               key={role.id}
               type="button"
-              onClick={() => onRoleSelect(role.id)}
+              onClick={() => onRoleSelect(role.name)}
               className={`inline-flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-sm font-medium transition-colors ${colourClasses}`}
               aria-pressed={isSelected}
               aria-label={`${role.displayName}${count > 0 ? `, ${count} in cart` : ''}`}
