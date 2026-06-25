@@ -31,9 +31,11 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
   const { cart, add, remove, clear, isFull, countByRole } = useSquadCart();
 
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set());
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [view, setView] = useState<'swipe' | 'review'>('swipe');
   const [showFullToast, setShowFullToast] = useState<boolean>(false);
+  const [cardKey, setCardKey] = useState<number>(0); // triggers bounce on new card
 
   const loading = rolesLoading || candidatesLoading;
   const error = rolesError || candidatesError;
@@ -47,23 +49,31 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
     return () => clearTimeout(timer);
   }, [showFullToast]);
 
-  // Reset currentIndex when role changes
+  // Reset currentIndex and skippedIds when role changes
   useEffect(() => {
     setCurrentIndex(0);
+    setSkippedIds(new Set());
   }, [selectedRole]);
 
-  // Compute filtered candidates whenever cart or selectedRole changes
+  // Compute filtered candidates: exclude cart members AND permanently skipped
   const filteredCandidates = useMemo(() => {
     if (!selectedRole) return [];
-    const excludeIds = new Set(cart.map((i) => i.candidateId));
+    const excludeIds = new Set([
+      ...cart.map((i) => i.candidateId),
+      ...skippedIds,
+    ]);
     return filterCandidatesByRole(candidates, selectedRole, excludeIds);
-  }, [candidates, selectedRole, cart]);
+  }, [candidates, selectedRole, cart, skippedIds]);
 
-  // Reset currentIndex when filteredCandidates changes due to cart updates
-  // We only reset if the current index is beyond the new deck size
+  // Wrap currentIndex around the deck for looping (right swipe keeps cards)
+  const wrappedIndex = filteredCandidates.length > 0
+    ? currentIndex % filteredCandidates.length
+    : 0;
+
+  // Reset if deck shrinks below current position
   useEffect(() => {
-    if (currentIndex > filteredCandidates.length) {
-      setCurrentIndex(filteredCandidates.length);
+    if (filteredCandidates.length > 0 && currentIndex >= filteredCandidates.length) {
+      setCurrentIndex(0);
     }
   }, [filteredCandidates.length, currentIndex]);
 
@@ -71,23 +81,31 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
     setSelectedRole(roleId);
   }, []);
 
+  // Left swipe = permanently skip (remove from deck)
   const handleSwipeLeft = useCallback(() => {
-    setCurrentIndex((prev) => prev + 1);
-  }, []);
+    const candidate = filteredCandidates[wrappedIndex];
+    if (candidate) {
+      setSkippedIds((prev) => new Set([...prev, candidate.id]));
+      // Deck will shrink by 1; index stays or wraps
+      setCardKey((k) => k + 1);
+    }
+  }, [filteredCandidates, wrappedIndex]);
 
+  // Right swipe = next (keep in deck, loop around)
   const handleSwipeRight = useCallback(() => {
     setCurrentIndex((prev) => prev + 1);
+    setCardKey((k) => k + 1);
   }, []);
 
   const handleSwipeDown = useCallback(
     (candidate: SwipeCandidate) => {
       if (isFull) {
         setShowFullToast(true);
-        // Don't add or advance when cart is full
         return;
       }
       add(candidate, selectedRole!);
-      setCurrentIndex((prev) => prev + 1);
+      // Candidate is removed from deck via cart excludeIds
+      setCardKey((k) => k + 1);
     },
     [isFull, add, selectedRole]
   );
@@ -113,7 +131,7 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
   if (loading) {
     return (
       <div
-        className="fixed inset-0 z-50 bg-white flex flex-col"
+        className="fixed inset-0 z-50 bg-sky-50 flex flex-col"
         data-testid="swipe-squad-selector"
       >
         <div className="flex-1 flex items-center justify-center">
@@ -130,7 +148,7 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
   if (error) {
     return (
       <div
-        className="fixed inset-0 z-50 bg-white flex flex-col"
+        className="fixed inset-0 z-50 bg-sky-50 flex flex-col"
         data-testid="swipe-squad-selector"
       >
         <div className="flex-1 flex items-center justify-center">
@@ -156,7 +174,7 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
   if (view === 'review') {
     return (
       <div
-        className="fixed inset-0 z-50 bg-white flex flex-col"
+        className="fixed inset-0 z-50 bg-sky-50 flex flex-col"
         data-testid="swipe-squad-selector"
       >
         <CartReview
@@ -173,7 +191,7 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
   // Swipe view (default)
   return (
     <div
-      className="fixed inset-0 z-50 bg-white flex flex-col"
+      className="fixed inset-0 z-50 bg-sky-50 flex flex-col"
       data-testid="swipe-squad-selector"
     >
       {/* Header with close button */}
@@ -221,10 +239,11 @@ export const SwipeSquadSelector: React.FC<SwipeSquadSelectorProps> = ({
         ) : (
           <SwipeCardStack
             candidates={filteredCandidates}
-            currentIndex={currentIndex}
+            currentIndex={wrappedIndex}
             onSwipeLeft={handleSwipeLeft}
             onSwipeRight={handleSwipeRight}
             onSwipeDown={handleSwipeDown}
+            cardKey={cardKey}
           />
         )}
       </div>

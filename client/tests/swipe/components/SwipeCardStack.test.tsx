@@ -55,7 +55,7 @@ describe('SwipeCardStack', () => {
   });
 
   it('shows empty state when deck is exhausted', () => {
-    render(<SwipeCardStack {...defaultProps} currentIndex={3} />);
+    render(<SwipeCardStack {...defaultProps} candidates={[]} currentIndex={0} />);
 
     expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     expect(screen.getByText('No more candidates for this role')).toBeInTheDocument();
@@ -63,7 +63,7 @@ describe('SwipeCardStack', () => {
 
   it('calls onDeckEmpty when deck is exhausted', () => {
     const onDeckEmpty = vi.fn();
-    render(<SwipeCardStack {...defaultProps} currentIndex={3} onDeckEmpty={onDeckEmpty} />);
+    render(<SwipeCardStack {...defaultProps} candidates={[]} currentIndex={0} onDeckEmpty={onDeckEmpty} />);
 
     expect(onDeckEmpty).toHaveBeenCalled();
   });
@@ -172,12 +172,13 @@ describe('SwipeCardStack', () => {
     expect(screen.getByText('Bob Smith')).toBeInTheDocument();
   });
 
-  it('does not render peek card when on the last candidate', () => {
+  it('renders peek card wrapping to first candidate when on the last candidate', () => {
     render(<SwipeCardStack {...defaultProps} currentIndex={2} />);
 
-    // Only Charlie should be visible (no next card)
+    // Charlie is top, peek wraps to Alice (index 0)
     expect(screen.getByText('Charlie Brown')).toBeInTheDocument();
+    expect(screen.getByText('Alice Johnson')).toBeInTheDocument();
     const cards = screen.getAllByTestId('swipe-card');
-    expect(cards).toHaveLength(1);
+    expect(cards).toHaveLength(2);
   });
 });

@@ -245,7 +245,7 @@ describe('AssembleSquadStep', () => {
       expect(screen.getByTestId('assemble-squad-error')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/failed to load recommendations/i)).toBeInTheDocument();
+    expect(screen.getByText(/unexpected error/i)).toBeInTheDocument();
   });
 
   it('deselects a candidate and updates missing roles', async () => {

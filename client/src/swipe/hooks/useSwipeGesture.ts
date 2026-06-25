@@ -41,6 +41,17 @@ export function useSwipeGesture(
     rotation: 0,
   });
 
+  // Track the actual DOM element so the effect re-runs when it changes
+  const [trackedElement, setTrackedElement] = useState<HTMLElement | null>(null);
+
+  // Sync ref to state on every render — this catches when ref.current goes from null to a real element
+  useEffect(() => {
+    const el = elementRef.current;
+    if (el !== trackedElement) {
+      setTrackedElement(el);
+    }
+  });
+
   // Use refs to store mutable drag state without causing re-renders
   const dragStateRef = useRef<DragState>({
     startX: 0,
@@ -110,7 +121,7 @@ export function useSwipeGesture(
   }, [determineDirection, calculateRotation]);
 
   useEffect(() => {
-    const element = elementRef.current;
+    const element = trackedElement;
     if (!element) return;
 
     const handlePointerDown = (e: PointerEvent) => {
@@ -249,7 +260,7 @@ export function useSwipeGesture(
         cancelAnimationFrame(rafRef.current);
       }
     };
-  }, [elementRef, updateFrame, resetState]);
+  }, [trackedElement, updateFrame, resetState]);
 
   return swipeState;
 }

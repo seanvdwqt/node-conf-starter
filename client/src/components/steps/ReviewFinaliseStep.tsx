@@ -13,9 +13,11 @@ import { GapIndicator } from '../ui/GapIndicator';
 
 export interface ReviewFinaliseStepProps {
   squadRequestId: string;
+  selections: Array<{ roleId: string; candidateIds: string[] }>;
   onFinalised: () => void;
   onReset: () => void;
   onBack: () => void;
+  onError?: (message: string) => void;
 }
 
 /**
@@ -27,9 +29,11 @@ export interface ReviewFinaliseStepProps {
  */
 export const ReviewFinaliseStep: React.FC<ReviewFinaliseStepProps> = ({
   squadRequestId,
+  selections,
   onFinalised,
   onReset,
   onBack,
+  onError,
 }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,15 +52,39 @@ export const ReviewFinaliseStep: React.FC<ReviewFinaliseStepProps> = ({
         setError(null);
         const response: RecommendationResponse = await getRecommendations(squadRequestId);
         if (!cancelled) {
-          setShortlists(response.shortlists);
+          // Build a lookup of selected candidate IDs per role
+          const selectionMap = new Map<string, Set<string>>();
+          for (const sel of selections) {
+            selectionMap.set(sel.roleId, new Set(sel.candidateIds));
+          }
+
+          // Filter shortlists to only include selected candidates
+          const filteredShortlists = response.shortlists.map((shortlist) => {
+            const selectedIds = selectionMap.get(shortlist.roleId);
+            if (!selectedIds || selectedIds.size === 0) {
+              return { ...shortlist, candidates: [], hasGap: true };
+            }
+            return {
+              ...shortlist,
+              candidates: shortlist.candidates.filter((c) =>
+                selectedIds.has(c.candidateId),
+              ),
+              hasGap: false,
+            };
+          });
+
+          setShortlists(filteredShortlists);
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
+          const message =
             err instanceof ApiError
               ? err.message
-              : 'Failed to load squad summary. Please try again.',
-          );
+              : 'An unexpected error occurred. Please try again.';
+          setError(message);
+          if (onError && !(err instanceof ApiError)) {
+            onError(message);
+          }
         }
       } finally {
         if (!cancelled) {
@@ -69,7 +97,7 @@ export const ReviewFinaliseStep: React.FC<ReviewFinaliseStepProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [squadRequestId]);
+  }, [squadRequestId, selections, onError]);
 
   /** Identify roles with coverage gaps (no candidates or hasGap). */
   const gapRoles: string[] = shortlists
@@ -88,15 +116,18 @@ export const ReviewFinaliseStep: React.FC<ReviewFinaliseStepProps> = ({
       );
       onFinalised();
     } catch (err) {
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : 'Failed to finalise the squad request. Please try again.',
-      );
+          : 'An unexpected error occurred. Please try again.';
+      setError(message);
+      if (onError && !(err instanceof ApiError)) {
+        onError(message);
+      }
     } finally {
       setFinalising(false);
     }
-  }, [squadRequestId, onFinalised]);
+  }, [squadRequestId, onFinalised, onError]);
 
   // Loading state
   if (loading) {

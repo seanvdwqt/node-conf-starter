@@ -52,7 +52,7 @@ describe('SwipeCard', () => {
   it('renders years of experience', () => {
     render(<SwipeCard candidate={mockCandidate} />);
 
-    expect(screen.getByTestId('years-experience')).toHaveTextContent('7 yrs experience');
+    expect(screen.getByTestId('years-experience')).toHaveTextContent('7 yrs exp');
   });
 
   it('renders current team', () => {

@@ -1,0 +1,1 @@
+Let's refactor the home page to choose between 3 modes: I want to be able to choose between using the wizard, swiping, or search features with the click of a button. Then we can go into those flows separately. 

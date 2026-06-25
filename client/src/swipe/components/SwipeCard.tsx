@@ -44,7 +44,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
   return (
     <div
       data-testid="swipe-card"
-      className="absolute inset-0 rounded-xl bg-white shadow-xl p-6 select-none overflow-hidden"
+      className="absolute inset-0 rounded-xl bg-white shadow-xl p-4 sm:p-5 md:p-6 select-none overflow-hidden"
       style={style}
     >
       {/* Directional hint overlays */}
@@ -53,7 +53,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           data-testid="hint-skip"
           className="absolute inset-0 flex items-center justify-center bg-red-500/20 rounded-xl z-10 pointer-events-none"
         >
-          <span className="text-red-600 text-3xl font-bold border-4 border-red-600 rounded-lg px-4 py-2 rotate-[-12deg]">
+          <span className="text-red-600 text-2xl sm:text-3xl font-bold border-4 border-red-600 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 rotate-[-12deg]">
             SKIP
           </span>
         </div>
@@ -63,7 +63,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           data-testid="hint-next"
           className="absolute inset-0 flex items-center justify-center bg-blue-500/20 rounded-xl z-10 pointer-events-none"
         >
-          <span className="text-blue-600 text-3xl font-bold border-4 border-blue-600 rounded-lg px-4 py-2 rotate-[12deg]">
+          <span className="text-blue-600 text-2xl sm:text-3xl font-bold border-4 border-blue-600 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2 rotate-[12deg]">
             NEXT →
           </span>
         </div>
@@ -73,7 +73,7 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
           data-testid="hint-add"
           className="absolute inset-0 flex items-center justify-center bg-green-500/20 rounded-xl z-10 pointer-events-none"
         >
-          <span className="text-green-600 text-3xl font-bold border-4 border-green-600 rounded-lg px-4 py-2">
+          <span className="text-green-600 text-2xl sm:text-3xl font-bold border-4 border-green-600 rounded-lg px-3 py-1.5 sm:px-4 sm:py-2">
             + ADD
           </span>
         </div>
@@ -82,51 +82,64 @@ export const SwipeCard: React.FC<SwipeCardProps> = ({
       {/* Card content */}
       <div className="relative z-0 h-full flex flex-col">
         {/* Header: Name and Role */}
-        <div className="mb-4">
-          <h2 className="text-xl font-bold text-gray-900">{candidate.name}</h2>
-          <p className="text-sm text-gray-500">{candidate.currentRole}</p>
+        <div className="mb-2 sm:mb-3 md:mb-4">
+          <h2 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 truncate">{candidate.name}</h2>
+          <p className="text-xs sm:text-sm text-gray-500 capitalize">{candidate.currentRole}</p>
         </div>
 
-        {/* Skills */}
+        {/* Skills with labels and proficiency */}
         {topSkills.length > 0 && (
-          <div className="mb-4">
-            <p className="text-xs font-medium text-gray-500 mb-2">Skills</p>
-            <div className="flex flex-wrap gap-2">
+          <div className="mb-2 sm:mb-3 md:mb-4 flex-1 min-h-0 overflow-y-auto">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5 sm:mb-2">Skills</p>
+            <div className="space-y-1.5 sm:space-y-2">
               {topSkills.map((skill) => (
-                <span
+                <div
                   key={skill.id}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 text-xs text-gray-700"
+                  className="flex items-center justify-between gap-2 rounded-lg bg-white border border-gray-200 px-2.5 py-1.5 sm:px-3 sm:py-2 shadow-sm"
                 >
-                  {skill.name}
-                  <span className="text-amber-500" aria-label={`Proficiency ${skill.proficiency} of 3`}>
-                    {'●'.repeat(skill.proficiency)}
-                    {'○'.repeat(3 - skill.proficiency)}
+                  <span className="text-xs sm:text-sm font-semibold text-gray-900">
+                    {skill.name}
                   </span>
-                </span>
+                  <span
+                    className="flex items-center gap-0.5 flex-shrink-0"
+                    aria-label={`${skill.name}: proficiency ${skill.proficiency} of 3`}
+                  >
+                    {[1, 2, 3].map((level) => (
+                      <span
+                        key={level}
+                        className={`w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full ${
+                          level <= skill.proficiency
+                            ? 'bg-indigo-500'
+                            : 'bg-gray-200'
+                        }`}
+                      />
+                    ))}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
         )}
 
         {/* Meta information */}
-        <div className="mt-auto space-y-2">
+        <div className="mt-auto space-y-1.5 sm:space-y-2 pt-2 border-t border-gray-100">
           {/* Availability badge */}
           <div className="flex items-center gap-2">
             <span
               data-testid="availability-badge"
-              className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${availBadge.className}`}
+              className={`inline-flex items-center rounded-full px-2 py-0.5 sm:px-2.5 text-[10px] sm:text-xs font-medium ${availBadge.className}`}
             >
               {availBadge.label}
             </span>
           </div>
 
           {/* Experience and Team */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-600">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] sm:text-xs text-gray-600">
             <span data-testid="years-experience">
-              {candidate.yearsExperience} yrs experience
+              {candidate.yearsExperience} yrs exp
             </span>
             <span className="text-gray-300">|</span>
-            <span data-testid="current-team">{candidate.currentTeam}</span>
+            <span data-testid="current-team" className="truncate">{candidate.currentTeam}</span>
           </div>
         </div>
       </div>

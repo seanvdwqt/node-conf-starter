@@ -13,7 +13,8 @@ import { GapIndicator } from '../ui/GapIndicator';
 
 export interface AssembleSquadStepProps {
   squadRequestId: string;
-  onCompleted: () => void;
+  onCompleted: (selections: Array<{ roleId: string; candidateIds: string[] }>) => void;
+  onError?: (message: string) => void;
 }
 
 /** Maximum total candidates that can be selected across all roles. */
@@ -51,6 +52,7 @@ function toCandidateCardData(candidate: RecommendedCandidate, roleName: string):
 export const AssembleSquadStep: React.FC<AssembleSquadStepProps> = ({
   squadRequestId,
   onCompleted,
+  onError,
 }) => {
   const [shortlists, setShortlists] = useState<RoleShortlist[]>([]);
   const [loading, setLoading] = useState(true);
@@ -86,11 +88,14 @@ export const AssembleSquadStep: React.FC<AssembleSquadStepProps> = ({
         }
       } catch (err) {
         if (!cancelled) {
-          setError(
+          const message =
             err instanceof ApiError
               ? err.message
-              : 'Failed to load recommendations. Please try again.',
-          );
+              : 'An unexpected error occurred. Please try again.';
+          setError(message);
+          if (onError && !(err instanceof ApiError)) {
+            onError(message);
+          }
         }
       } finally {
         if (!cancelled) {
@@ -196,17 +201,26 @@ export const AssembleSquadStep: React.FC<AssembleSquadStepProps> = ({
         }
       }
       await saveSquad(squadRequestId, payload);
-      onCompleted();
+
+      // Build role selections to pass to the wizard state
+      const roleSelections = Object.entries(selections).map(([roleId, candidateIds]) => ({
+        roleId,
+        candidateIds: Array.from(candidateIds),
+      }));
+      onCompleted(roleSelections);
     } catch (err) {
-      setError(
+      const message =
         err instanceof ApiError
           ? err.message
-          : 'Failed to save squad. Please try again.',
-      );
+          : 'An unexpected error occurred. Please try again.';
+      setError(message);
+      if (onError && !(err instanceof ApiError)) {
+        onError(message);
+      }
     } finally {
       setSubmitting(false);
     }
-  }, [canSubmit, selections, squadRequestId, onCompleted]);
+  }, [canSubmit, selections, squadRequestId, onCompleted, onError]);
 
   // Loading state
   if (loading) {

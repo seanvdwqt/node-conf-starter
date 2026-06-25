@@ -89,6 +89,10 @@ const MOCK_FINALISE_RESPONSE: FinaliseResponse = {
 describe('ReviewFinaliseStep', () => {
   const defaultProps = {
     squadRequestId: 'req-123',
+    selections: [
+      { roleId: 'role-1', candidateIds: ['c1'] },
+      { roleId: 'role-2', candidateIds: ['c2'] },
+    ],
     onFinalised: vi.fn(),
     onReset: vi.fn(),
     onBack: vi.fn(),
@@ -219,7 +223,7 @@ describe('ReviewFinaliseStep', () => {
       expect(screen.getByTestId('review-error')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/failed to finalise/i)).toBeInTheDocument();
+    expect(screen.getByText(/unexpected error/i)).toBeInTheDocument();
   });
 
   it('shows error banner when recommendations fail to load', async () => {
@@ -231,7 +235,7 @@ describe('ReviewFinaliseStep', () => {
       expect(screen.getByTestId('review-error')).toBeInTheDocument();
     });
 
-    expect(screen.getByText(/failed to load squad summary/i)).toBeInTheDocument();
+    expect(screen.getByText(/unexpected error/i)).toBeInTheDocument();
   });
 
   it('displays role section headers', async () => {

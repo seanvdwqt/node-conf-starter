@@ -4,6 +4,8 @@ import { DefineRolesStep } from './steps/DefineRolesStep';
 import RecommendationsStep from './steps/RecommendationsStep';
 import { AssembleSquadStep } from './steps/AssembleSquadStep';
 import { ReviewFinaliseStep } from './steps/ReviewFinaliseStep';
+import { ScrollButtons } from './ui/ScrollButtons';
+import { ErrorToast } from './ui/ErrorToast';
 import type { TeamSuggestion } from './InstantSquadSearch';
 
 /** Step labels for the 5-step wizard */
@@ -65,6 +67,7 @@ const INITIAL_STATE: WizardState = {
 
 export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}) {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
+  const [wizardError, setWizardError] = useState<string | null>(null);
 
   // Jump to step 4 when an initial suggestion is provided from InstantSquadSearch
   useEffect(() => {
@@ -108,18 +111,32 @@ export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}
     }));
   }, []);
 
-  const _setSelections = useCallback((selections: RoleSelection[]) => {
+  const setSelections = useCallback((selections: RoleSelection[]) => {
     setState((prev) => ({ ...prev, selections }));
   }, []);
 
   // Expose setters for step components (suppresses unused-var warnings until wired up)
   void _setRequestData;
-  void _setSelections;
 
   const handleRequestCreated = useCallback((id: string) => {
     setSquadRequestId(id);
     goNext();
   }, [setSquadRequestId, goNext]);
+
+  /** Called by AssembleSquadStep when selections are saved and user advances. */
+  const handleAssembleCompleted = useCallback((roleSelections: RoleSelection[]) => {
+    setSelections(roleSelections);
+    goNext();
+  }, [setSelections, goNext]);
+
+  /** Surface unexpected errors as a toast. */
+  const handleError = useCallback((message: string) => {
+    setWizardError(message);
+  }, []);
+
+  const dismissError = useCallback(() => {
+    setWizardError(null);
+  }, []);
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -143,16 +160,19 @@ export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}
         return (
           <AssembleSquadStep
             squadRequestId={state.squadRequestId!}
-            onCompleted={goNext}
+            onCompleted={handleAssembleCompleted}
+            onError={handleError}
           />
         );
       case 5:
         return (
           <ReviewFinaliseStep
             squadRequestId={state.squadRequestId!}
+            selections={state.selections}
             onFinalised={() => {}}
-            onReset={() => setState((prev) => ({ ...prev, currentStep: 4 }))}
+            onReset={() => setState((prev) => ({ ...prev, currentStep: 4, selections: [] }))}
             onBack={goBack}
+            onError={handleError}
           />
         );
       default:
@@ -161,7 +181,7 @@ export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6" data-testid="squad-wizard">
+    <div className="max-w-4xl mx-auto p-6 relative" data-testid="squad-wizard">
       {/* Step indicator */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
@@ -231,6 +251,12 @@ export default function SquadWizard({ initialSuggestion }: SquadWizardProps = {}
           {isLastStep ? 'Finalise' : 'Next'}
         </button>
       </div>
+
+      {/* Floating scroll buttons */}
+      <ScrollButtons />
+
+      {/* Error toast at the bottom of the screen */}
+      <ErrorToast message={wizardError} onDismiss={dismissError} />
     </div>
   );
 }

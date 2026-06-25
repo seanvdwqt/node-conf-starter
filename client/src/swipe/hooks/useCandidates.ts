@@ -36,10 +36,38 @@ export function useCandidates(): UseCandidatesResult {
       const data = await response.json();
 
       const mapped: SwipeCandidate[] = data.map(
-        (raw: Record<string, unknown>) => ({
-          ...raw,
-          availability: deriveAvailability(raw.capacityFree as number | null | undefined),
-        })
+        (raw: Record<string, unknown>) => {
+          // Map nested skill objects to flat CandidateSkill shape
+          const rawSkills = (raw.skills as Array<Record<string, unknown>>) ?? [];
+          const skills = rawSkills.map((s) => {
+            const nested = s.skill as Record<string, unknown> | undefined;
+            return {
+              id: (s.id as string) ?? (s.skillId as string) ?? '',
+              name: nested?.name as string ?? (s.name as string) ?? '',
+              category: nested?.category as string ?? (s.category as string) ?? '',
+              proficiency: (s.proficiency as number) ?? 1,
+            };
+          });
+
+          return {
+            id: raw.id as string,
+            name: raw.name as string,
+            email: raw.email as string,
+            currentRole: raw.currentRole as string,
+            businessUnit: raw.businessUnit as string,
+            capacityFree: raw.capacityFree as number,
+            currentWorkload: raw.currentWorkload as number,
+            yearsExperience: raw.yearsExperience as number,
+            currentTeam: raw.currentTeam as string,
+            skills,
+            projects: (raw.projects as Array<Record<string, unknown>> ?? []).map((p) => ({
+              id: p.id as string,
+              projectName: p.projectName as string,
+              rolePlayed: p.rolePlayed as string,
+            })),
+            availability: deriveAvailability(raw.capacityFree as number | null | undefined),
+          };
+        }
       );
 
       setCandidates(mapped);

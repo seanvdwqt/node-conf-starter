@@ -10,6 +10,7 @@ export interface SwipeCardStackProps {
   onSwipeRight: () => void;
   onSwipeDown: (candidate: SwipeCandidate) => void;
   onDeckEmpty?: () => void;
+  cardKey?: number;
 }
 
 /**
@@ -28,11 +29,12 @@ export const SwipeCardStack: React.FC<SwipeCardStackProps> = ({
   onSwipeRight,
   onSwipeDown,
   onDeckEmpty,
+  cardKey = 0,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const topCardRef = useRef<HTMLDivElement>(null);
 
-  const isDeckExhausted = currentIndex >= candidates.length;
+  const isDeckExhausted = candidates.length === 0;
 
   // Notify parent when deck is exhausted
   useEffect(() => {
@@ -43,7 +45,9 @@ export const SwipeCardStack: React.FC<SwipeCardStackProps> = ({
 
   const currentCandidate = isDeckExhausted ? null : candidates[currentIndex];
   const nextCandidate =
-    currentIndex + 1 < candidates.length ? candidates[currentIndex + 1] : null;
+    candidates.length > 1
+      ? candidates[(currentIndex + 1) % candidates.length]
+      : null;
 
   const handleSwipeDown = useCallback(() => {
     if (currentCandidate) {
@@ -118,7 +122,7 @@ export const SwipeCardStack: React.FC<SwipeCardStackProps> = ({
         aria-roledescription="swipe deck"
         onKeyDown={handleKeyDown}
         data-testid="swipe-card-stack"
-        className="relative w-full h-96 flex items-center justify-center"
+        className="relative w-full h-72 sm:h-80 md:h-96 max-w-sm sm:max-w-md md:max-w-lg mx-auto flex items-center justify-center"
       >
         <p className="text-gray-500 text-center" data-testid="empty-state">
           No more candidates for this role
@@ -136,7 +140,7 @@ export const SwipeCardStack: React.FC<SwipeCardStackProps> = ({
       aria-roledescription="swipe deck"
       onKeyDown={handleKeyDown}
       data-testid="swipe-card-stack"
-      className="relative w-full h-96 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 rounded-xl"
+      className="relative w-full h-72 sm:h-80 md:h-96 max-w-sm sm:max-w-md md:max-w-lg mx-auto focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 rounded-xl"
     >
       {/* Peek card (next card behind) */}
       {nextCandidate && (
@@ -145,13 +149,22 @@ export const SwipeCardStack: React.FC<SwipeCardStackProps> = ({
 
       {/* Top card (current candidate) */}
       {currentCandidate && (
-        <div ref={topCardRef} className="absolute inset-0" style={{ zIndex: 2 }}>
-          <SwipeCard
-            candidate={currentCandidate}
-            style={topCardStyle}
-            isDragging={swipeState.isDragging}
-            direction={swipeState.direction}
-          />
+        <div
+          ref={topCardRef}
+          className="absolute inset-0"
+          style={{ zIndex: 2 }}
+        >
+          <div
+            key={cardKey}
+            className="absolute inset-0 animate-[bounce-in_0.3s_ease-out]"
+          >
+            <SwipeCard
+              candidate={currentCandidate}
+              style={topCardStyle}
+              isDragging={swipeState.isDragging}
+              direction={swipeState.direction}
+            />
+          </div>
         </div>
       )}
     </div>
