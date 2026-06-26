@@ -374,10 +374,13 @@ export const DefineRolesStep: React.FC<DefineRolesStepProps> = ({
                   {/* Matching candidates — scrollable horizontal strip */}
                   {matchingCandidates.length > 0 && (
                     <div className="mt-2 mb-3">
-                      <p className="text-xs font-medium text-gray-500 mb-1.5">
+                      <p className="text-xs font-medium text-gray-500 mb-1">
                         Available team members ({matchingCandidates.length})
                       </p>
-                      <div className="flex gap-2 overflow-x-auto pb-1" style={{ maxHeight: '120px' }}>
+                      <p className="text-[10px] text-gray-400 mb-1.5 italic">
+                        This is just a preview of available team members
+                      </p>
+                      <div className="flex gap-2 overflow-x-auto pb-1">
                         {matchingCandidates.map((candidate) => (
                           <CandidateMiniCard
                             key={candidate.id}
@@ -397,7 +400,7 @@ export const DefineRolesStep: React.FC<DefineRolesStepProps> = ({
                   )}
 
                   {/* Skills list — compact */}
-                  <details className="mt-2" open>
+                  <details className="mt-2">
                     <summary className="text-xs font-medium text-gray-500 cursor-pointer select-none">
                       Skills configuration ({selectedRole.skills.length})
                     </summary>
